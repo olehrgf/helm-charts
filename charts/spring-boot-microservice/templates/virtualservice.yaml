@@ -1,0 +1,34 @@
+{{- with .Values.istio.virtualService }}
+  {{- if .enabled }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "spring-boot-microservice.fullname" $ }}
+  labels:
+  {{- include "spring-boot-microservice.labels" $ | nindent 4 }}
+spec:
+  {{- with .hosts }}
+  hosts:
+  {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- with .gateways }}
+  gateways:
+  {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  exportTo:
+  {{- toYaml .exportTo | nindent 4 }}
+  {{- with .http }}
+  http:
+  {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- with .tcp }}
+  tcp:
+  {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- with .tls }}
+  tls:
+  {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- end }}

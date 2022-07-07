@@ -1,0 +1,197 @@
+# Default values for spring-boot-microservice.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appVersion: 0.0.1
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "stable"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podLabels:
+  fluentbit.io/target: spring-boot-json
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  enabled: true
+  type: ClusterIP
+  httpPort: 80
+  httpTargetPort: http
+  httpNodePort: null
+  managementPort: 9099
+  managementTargetPort: http-management
+  managementNodePort: null
+  labels:
+    prometheus.io/target: spring-boot-actuator-instancce
+
+livenessProbe: |-
+  httpGet:
+    path: /actuator/health/liveness
+    port: {{.Values.service.managementPort}}
+  failureThreshold: 3
+  periodSeconds: 15
+
+readinessProbe: |-
+  httpGet:
+    path: /actuator/health/readiness
+    port: {{ .Values.service.managementPort }}
+  failureThreshold: 10
+  periodSeconds: 15
+
+env: |-
+  - name: LOG4J_CONFIGURATION_FILE
+    value: /etc/config/logging.yaml
+  - name: JAVA_TOOL_OPTIONS
+    value: >-
+      -XX:+UseContainerSupport
+      -XX:MaxRAMPercentage=80.0
+      -Djava.net.preferIPv4Stack=true
+      -Djava.awt.headless=true
+      -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
+
+envFrom: |-
+
+log4j2Config: |-
+  Configuration:
+    Appenders:
+      Console:
+        name: Console
+        target: SYSTEM_OUT
+        JsonLayout:
+          compact: true
+          eventEol: true
+          includeTimeMillis: true
+
+    Loggers:
+      Root:
+        level: INFO
+        AppenderRef:
+          - ref: Console
+
+
+ingress:
+  enabled: false
+  annotations: {}
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+volumeMounts: |-
+  - name: logging
+    mountPath: /etc/config/
+    readOnly: true
+
+volumes: |-
+  - name: logging
+    configMap:
+      name: {{ include "spring-boot-microservice.fullname" . }}
+      items:
+        - key: "log4j2.yaml"
+          path: logging.yaml
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: |-
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            {{- include "spring-boot-microservice.selectorLabels" . | nindent 10 }}
+        topologyKey: kubernetes.io/hostname
+
+serviceMonitor:
+  # If `true`, a ServiceMonitor resource for the prometheus-operator is created
+  enabled: false
+  # Optionally sets a target namespace in which to deploy the ServiceMonitor resource
+  namespace: ""
+  # Optionally sets a namespace for the ServiceMonitor
+  namespaceSelector: {}
+  # Annotations for the ServiceMonitor
+  annotations: {}
+  # Additional labels for the ServiceMonitor
+  labels: {}
+  # Interval at which Prometheus scrapes metrics
+  interval: 15s
+  # Timeout for scraping
+  scrapeTimeout: 15s
+  # The path at which metrics are served
+  path: /actuator/prometheus
+  # The Service port at which metrics are served
+  port: http-management
+
+# https://istio.io/latest/docs/reference/config/networking/virtual-service/
+istio:
+  # If `true`, special istio labels added
+  enabled: true
+  rewriteAppHTTPProbers: true
+  virtualService:
+    # If `true`, a VirtualService resource for the istio-operator is created
+    enabled: true
+    # The destination hosts to which traffic is being sent. Could be a DNS name with wildcard prefix or an IP address.
+    hosts: []
+    gateways: []
+    # A list of namespaces to which this virtual service is exported.
+    exportTo:
+      - "*"
+    # An ordered list of route rules for HTTP traffic.
+    http: []
+    # An ordered list of route rules for opaque TCP traffic.
+    tcp: []
+    # An ordered list of route rule for non-terminated TLS & HTTPS traffic.
+    tls: []

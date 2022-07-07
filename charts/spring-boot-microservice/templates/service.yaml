@@ -1,0 +1,33 @@
+{{- with .Values.service }}
+  {{- if .enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spring-boot-microservice.fullname" $ }}
+  labels:
+  {{- include "spring-boot-microservice.labels" $ | nindent 4 }}
+  {{- if .labels }}
+  {{- toYaml .labels | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .type }}
+  ports:
+    - port: {{ .httpPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (eq "NodePort" .type) .httpNodePort }}
+      nodePort: {{ .httpNodePort }}
+    {{- end }}
+    - port: {{ .managementPort }}
+      targetPort: http-management
+      protocol: TCP
+      name: http-management
+      {{- if and (eq "NodePort" .type) .managementNodePort }}
+      nodePort: {{ .managementNodePort }}
+  {{- end }}
+  selector:
+  {{- include "spring-boot-microservice.selectorLabels" $ | nindent 4 }}
+  {{- end }}
+  {{- end }}

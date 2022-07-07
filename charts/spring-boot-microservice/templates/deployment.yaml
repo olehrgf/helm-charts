@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spring-boot-microservice.fullname" . }}
+  labels:
+  {{- include "spring-boot-microservice.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+  {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: {{ .Values.istio.rewriteAppHTTPProbers | quote }}
+      {{- end }}
+      labels:
+      {{- include "spring-boot-microservice.selectorLabels" . | nindent 8 }}
+      {{- if .Values.podLabels }}
+      {{- toYaml .Values.podLabels | nindent 8 }}
+    {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "spring-boot-microservice.serviceAccountName" . }}
+      securityContext:
+      {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if (contains "sha256:" .Values.image.tag) }}
+          image: "{{ .Values.image.repository }}@{{ .Values.image.tag | trimPrefix "@" | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.httpTargetPort }}
+              protocol: TCP
+            - name: http-management
+              containerPort: {{ .Values.service.managementTargetPort }}
+              protocol: TCP
+
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+
+          {{- with .Values.env }}
+          env:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.envFrom }}
+          envFrom:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+      {{- tpl . $ | nindent 12 }}
+      {{- end }}
+
+      {{- with .Values.volumes }}
+      volumes:
+      {{- tpl . $ | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+      {{- tpl . $ | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+  {{- tpl . $ | nindent 8 }}
+  {{- end }}
