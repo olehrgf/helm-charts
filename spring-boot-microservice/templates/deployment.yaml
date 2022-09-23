@@ -42,9 +42,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- end }}
 
+          {{- with .Values.args }}
           args:
-          {{- with .Values.extraArgs }}
-            {{- toYaml . $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
 
           ports:
@@ -76,14 +76,14 @@ spec:
             - name: LOG4J_CONFIGURATION_FILE
               value: /etc/config/logging.yaml
             - name: JAVA_TOOL_OPTIONS
-              value: {{- toYaml .Values.jvmOptions }}
+              value: {{ join " " .Values.jvmOptions }}
           {{- with .Values.extraEnv }}
-              {{- toYaml . $ | nindent 12 }}
+              {{- toYaml . | nindent 12 }}
           {{- end }}
 
           {{- with .Values.envFrom }}
           envFrom:
-            {{- toYaml . $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
 
           volumeMounts:
@@ -91,7 +91,7 @@ spec:
               mountPath: /etc/config/
               readOnly: true
           {{- with .Values.extraVolumeMounts }}
-            {{- toYaml . $ | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
 
       volumes:
@@ -99,10 +99,10 @@ spec:
           configMap:
             name: {{ include "spring-boot-microservice.fullname" . }}
             items:
-              - key: "log4j2.yaml"
+              - key: "logging.yaml"
                 path: logging.yaml
       {{- with .Values.extraVolumes }}
-        {{- toYaml . $ | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- with .Values.nodeSelector }}
@@ -112,10 +112,10 @@ spec:
 
       {{- with .Values.affinity }}
       affinity:
-        {{- toYaml . $ | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- with .Values.tolerations }}
       tolerations:
-        {{- toYaml . $ | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
