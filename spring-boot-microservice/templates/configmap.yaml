@@ -6,6 +6,6 @@ metadata:
   {{- include "spring-boot-microservice.labels" . | nindent 6 }}
 data:
   {{- with .Values.log4j2Config }}
-  log4j2.yaml: >-
+  logging.yaml: >-
     {{- tpl . $ | nindent 6 }}
     {{- end }}

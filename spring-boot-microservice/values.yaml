@@ -7,7 +7,7 @@ appVersion: 0.0.1
 replicaCount: 1
 
 image:
-  repository: amazoncorretto:17
+  repository: amazoncorretto
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "17"
@@ -46,10 +46,10 @@ service:
   enabled: true
   type: ClusterIP
   httpPort: 80
-  httpTargetPort: http
+  httpTargetPort: "8080"
   httpNodePort: null
-  managementPort: 9099
-  managementTargetPort: http-management
+  managementPort: 9090
+  managementTargetPort: "9090"
   managementNodePort: null
   labels:
     prometheus.io/target: spring-boot-actuator-instance
@@ -75,13 +75,14 @@ log4j2Config: |-
         AppenderRef:
           - ref: Console
 
-extraArgs: {}
+args: {}
 
-jvmOptions: >-
-  -XX:+UseContainerSupport
-  -XX:MaxRAMPercentage=80.0
-  -Djava.net.preferIPv4Stack=true
-  -Djava.awt.headless=true
+jvmOptions:
+  - -XX:+UseContainerSupport
+  - -XX:MaxRAMPercentage=80.0
+  - -Djava.net.preferIPv4Stack=true
+  - -Djava.awt.headless=true
+  - -Dlogging.config=/etc/config/app/logging.yaml
 
 ingress:
   enabled: false
