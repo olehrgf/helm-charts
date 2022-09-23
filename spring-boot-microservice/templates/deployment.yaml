@@ -3,29 +3,25 @@ kind: Deployment
 metadata:
   name: {{ include "spring-boot-microservice.fullname" . }}
   labels:
-  {{- include "spring-boot-microservice.labels" . | nindent 4 }}
+    {{- include "spring-boot-microservice.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-  {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
+      {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
       annotations:
-        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- if .Values.istio.enabled }}
-        sidecar.istio.io/inject: "true"
-        sidecar.istio.io/rewriteAppHTTPProbers: {{ .Values.istio.rewriteAppHTTPProbers | quote }}
       {{- end }}
       labels:
-      {{- include "spring-boot-microservice.selectorLabels" . | nindent 8 }}
-      {{- if .Values.podLabels }}
-      {{- toYaml .Values.podLabels | nindent 8 }}
-    {{- end }}
+        {{- include "spring-boot-microservice.selectorLabels" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,11 +29,11 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "spring-boot-microservice.serviceAccountName" . }}
       securityContext:
-      {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.securityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
           {{- if (contains "sha256:" .Values.image.tag) }}
           image: "{{ .Values.image.repository }}@{{ .Values.image.tag | trimPrefix "@" | default .Chart.AppVersion }}"
           imagePullPolicy: IfNotPresent
@@ -45,6 +41,12 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- end }}
+
+          args:
+          {{- with .Values.extraArgs }}
+            {{- toYaml . $ | nindent 12 }}
+          {{- end }}
+
           ports:
             - name: http
               containerPort: {{ .Values.service.httpTargetPort }}
@@ -53,50 +55,67 @@ spec:
               containerPort: {{ .Values.service.managementTargetPort }}
               protocol: TCP
 
-          {{- with .Values.livenessProbe }}
           livenessProbe:
-          {{- tpl . $ | nindent 12 }}
-          {{- end }}
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{.Values.service.managementPort}}
+            failureThreshold: 3
+            periodSeconds: 15
 
-          {{- with .Values.readinessProbe }}
           readinessProbe:
-          {{- tpl . $ | nindent 12 }}
-          {{- end }}
+            httpGet:
+              path: /actuator/health/readiness
+              port: {{ .Values.service.managementPort }}
+            failureThreshold: 10
+            periodSeconds: 15
 
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
 
-          {{- with .Values.env }}
           env:
-          {{- tpl . $ | nindent 12 }}
+            - name: LOG4J_CONFIGURATION_FILE
+              value: /etc/config/logging.yaml
+            - name: JAVA_TOOL_OPTIONS
+              value: {{- toYaml .Values.jvmOptions }}
+          {{- with .Values.extraEnv }}
+              {{- toYaml . $ | nindent 12 }}
           {{- end }}
 
           {{- with .Values.envFrom }}
           envFrom:
-          {{- tpl . $ | nindent 12 }}
+            {{- toYaml . $ | nindent 12 }}
           {{- end }}
 
-          {{- with .Values.volumeMounts }}
           volumeMounts:
-      {{- tpl . $ | nindent 12 }}
-      {{- end }}
+            - name: logging
+              mountPath: /etc/config/
+              readOnly: true
+          {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . $ | nindent 12 }}
+          {{- end }}
 
-      {{- with .Values.volumes }}
       volumes:
-      {{- tpl . $ | nindent 8 }}
+        - name: logging
+          configMap:
+            name: {{ include "spring-boot-microservice.fullname" . }}
+            items:
+              - key: "log4j2.yaml"
+                path: logging.yaml
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . $ | nindent 8 }}
       {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
-      {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- with .Values.affinity }}
       affinity:
-      {{- tpl . $ | nindent 8 }}
+        {{- toYaml . $ | nindent 8 }}
       {{- end }}
 
       {{- with .Values.tolerations }}
       tolerations:
-  {{- tpl . $ | nindent 8 }}
-  {{- end }}
+        {{- toYaml . $ | nindent 8 }}
+      {{- end }}

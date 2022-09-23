@@ -3,7 +3,17 @@ entries:
   spring-boot-microservice:
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2022-07-07T18:17:25.422004+03:00"
+    created: "2022-09-23T10:27:14.684044+03:00"
+    description: A common Helm chart for Spring boot application
+    digest: 3866c41c54ab2765abe86719860f32fa638cd1c9ef7dadeab5da2e26db51a3a7
+    name: spring-boot-microservice
+    type: application
+    urls:
+    - spring-boot-microservice-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2022-09-23T10:27:14.683528+03:00"
     description: A common Helm chart for Spring boot application
     digest: 4c9eff3e5415cbd4fd764da21f2a16662298eea110c5621d2636bb326b8f23a2
     name: spring-boot-microservice
@@ -11,4 +21,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.1.tgz
     version: 0.0.1
-generated: "2022-07-07T18:17:25.421258+03:00"
+generated: "2022-09-23T10:27:14.682305+03:00"
