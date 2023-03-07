@@ -1,24 +1,83 @@
-applications: []
-#  - enabled: true
-#    additionalAnnotations: {}
+applications: {}
+#  argocd-app:
+#    enabled: true
+#    namespace: argocd
 #    additionalLabels: {}
-#    name: argocd-app
-#    namespace: argo-cd
-#    finalizers: []
-#    project: common-infrastructure
-#    sources: []
-#    source: {}
+#    additionalAnnotations: {}
+#    finalizers:
+#      - resources-finalizer.argocd.argoproj.io
+#    project: guestbook
+#    source:
+#      repoURL: https://github.com/argoproj/argocd-example-apps.git
+#      targetRevision: HEAD
+#      path: guestbook
+#      directory:
+#        recurse: true
+#    # ArgoCD v2.6 or later
+#    sources:
+#      - chart: elasticsearch
+#        repoURL: https://helm.elastic.co
+#        targetRevision: 8.5.1
+#      - repoURL: https://github.com/argoproj/argocd-example-apps.git
+#        path: guestbook
+#        targetRevision: HEAD
 #    destination:
 #      server: https://kubernetes.default.svc
-#      namespace: argo-cd
+#      namespace: guestbook
 #    syncPolicy:
-#      syncOptions:
-#        - CreateNamespace=true
 #      automated:
-#        selfHeal: true
-#        prune: true
-#    revisionHistoryLimit: {}
-#    ignoreDifferences: {}
-#    info: {}
+#        prune: false
+#        selfHeal: false
+#    revisionHistoryLimit: null
+#    ignoreDifferences:
+#      - group: apps
+#        kind: Deployment
+#        jsonPointers:
+#          - /spec/replicas
+#    info:
+#      - name: url
+#        value: https://argoproj.github.io/
 
+applicationsets: {}
+#  argocd:
+#    enabled: true
+#    namespace: argocd
+#    additionalLabels: {}
+#    additionalAnnotations: {}
+#    generators:
+#      - git:
+#          repoURL: https://github.com/argoproj/argocd-example-apps.git
+#          revision: HEAD
+#          directories:
+#            - path: guestbook
+#            - path: kustomize-*
+#    template:
+#      metadata:
+#        name: '{{path.basename}}'
+#        labels: {}
+#        annotations: {}
+#      spec:
+#        project: default
+#        source:
+#          repoURL: https://github.com/argoproj/argocd-example-apps.git
+#          targetRevision: HEAD
+#          path: '{{path}}'
+#        destination:
+#          server: https://kubernetes.default.svc
+#          namespace: default
+#        syncPolicy:
+#          automated:
+#            prune: false
+#            selfHeal: false
+#        ignoreDifferences:
+#          - group: apps
+#            kind: Deployment
+#            jsonPointers:
+#              - /spec/replicas
+#        info:
+#          - name: url
+#            value: https://argoproj.github.io/
+#    syncPolicy:
+#      # Set Application finalizer
+#      preserveResourcesOnDeletion: false
 

@@ -1,5 +1,6 @@
-{{- range .Values.applications }}
-{{- if .enabled }}
+{{- range $name, $data := .Values.applications }}
+{{- if $data.enabled }}
+{{- with $data }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -14,7 +15,7 @@ metadata:
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  name: {{ .name }}
+  name: {{ $name }}
   {{- with .namespace }}
   namespace: {{ . }}
   {{- end }}
@@ -50,4 +51,5 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
+{{- end}}
 {{- end}}

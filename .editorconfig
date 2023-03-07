@@ -1,0 +1,92 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 255
+tab_width = 4
+trim_trailing_whitespace = true
+ij_continuation_indent_size = 4
+ij_formatter_off_tag = @formatter:off
+ij_formatter_on_tag = @formatter:on
+ij_formatter_tags_enabled = true
+ij_smart_tabs = false
+ij_visual_guides = none
+ij_wrap_on_typing = false
+
+[*.go]
+indent_style = tab
+
+[Makefile]
+indent_style = tab
+
+[.editorconfig]
+ij_editorconfig_align_group_field_declarations = false
+ij_editorconfig_space_after_colon = false
+ij_editorconfig_space_after_comma = true
+ij_editorconfig_space_before_colon = false
+ij_editorconfig_space_before_comma = false
+ij_editorconfig_spaces_around_assignment_operators = true
+
+[{*.ad,*.adoc,*.asciidoc,.asciidoctorconfig}]
+ij_asciidoc_blank_lines_after_header = 1
+ij_asciidoc_blank_lines_keep_after_header = 1
+ij_asciidoc_formatting_enabled = true
+ij_asciidoc_one_sentence_per_line = true
+
+[{*.ant,*.fxml,*.jhm,*.jnlp,*.jrxml,*.pom,*.qrc,*.rng,*.tld,*.wadl,*.wsdd,*.wsdl,*.xjb,*.xml,*.xsd,*.xsl,*.xslt,*.xul,phpunit.xml.dist}]
+ij_xml_align_attributes = true
+ij_xml_align_text = false
+ij_xml_attribute_wrap = normal
+ij_xml_block_comment_at_first_column = true
+ij_xml_keep_blank_lines = 2
+ij_xml_keep_indents_on_empty_lines = false
+ij_xml_keep_line_breaks = true
+ij_xml_keep_line_breaks_in_text = true
+ij_xml_keep_whitespaces = false
+ij_xml_keep_whitespaces_around_cdata = preserve
+ij_xml_keep_whitespaces_inside_cdata = false
+ij_xml_line_comment_at_first_column = true
+ij_xml_space_after_tag_name = false
+ij_xml_space_around_equals_in_attribute = true
+ij_xml_space_inside_empty_tag = true
+ij_xml_text_wrap = normal
+
+[{*.bash,*.sh,*.zsh}]
+indent_size = 2
+tab_width = 2
+ij_shell_binary_ops_start_line = false
+ij_shell_keep_column_alignment_padding = false
+ij_shell_minify_program = false
+ij_shell_redirect_followed_by_space = false
+ij_shell_switch_cases_indented = false
+ij_shell_use_unix_line_separator = true
+
+[{*.har,*.jsb2,*.jsb3,*.json,.babelrc,.eslintrc,.prettierrc,.stylelintrc,bowerrc,composer.lock,jest.config}]
+indent_size = 2
+ij_json_keep_blank_lines_in_code = 0
+ij_json_keep_indents_on_empty_lines = false
+ij_json_keep_line_breaks = true
+ij_json_space_after_colon = true
+ij_json_space_after_comma = true
+ij_json_space_before_colon = false
+ij_json_space_before_comma = false
+ij_json_spaces_within_braces = false
+ij_json_spaces_within_brackets = false
+ij_json_wrap_long_lines = false
+
+[{*.yaml,*.yml}]
+indent_size = 2
+ij_yaml_align_values_properties = do_not_align
+ij_yaml_autoinsert_sequence_marker = true
+ij_yaml_block_mapping_on_new_line = false
+ij_yaml_indent_sequence_value = true
+ij_yaml_keep_indents_on_empty_lines = false
+ij_yaml_keep_line_breaks = true
+ij_yaml_sequence_on_new_line = false
+ij_yaml_space_before_colon = false
+ij_yaml_spaces_within_braces = false
+ij_yaml_spaces_within_brackets = false
