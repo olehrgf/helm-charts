@@ -1,4 +1,4 @@
-https://artifacthub.io/packages/search?repo=olehrgf[image:https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/olehrgf[Artifact Hub]]
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/olehrgf)](https://artifacthub.io/packages/search?repo=olehrgf)
 
 # helm-charts
 
