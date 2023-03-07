@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argocd-apps
+description: A Helm chart for generating Argo CD applications
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
