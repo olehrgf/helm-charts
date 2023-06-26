@@ -1,0 +1,7 @@
+apiVersion: v1
+appVersion: 3.2.2
+description: Spark History Server is the web UI for completed and running (aka incomplete) Spark applications. It is an extension of Spark’s web UI.
+home: https://spark.apache.org/
+icon: https://spark.apache.org/docs/latest/img/spark-logo-hd.png
+name: spark-hs
+version: 0.0.1

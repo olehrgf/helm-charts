@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "spark-hs.name" . }}-conf
+  labels:
+    {{- include "spark-hs.labels" $ | trim | nindent 4 }}
+data:
+  {{- with .Values.spark.properties }}
+  spark-defaults.conf: |
+    {{- tpl . $ | nindent 6 }}
+  {{- end }}

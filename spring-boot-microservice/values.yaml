@@ -12,7 +12,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "17"
 
-imagePullSecrets: [ ]
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -20,23 +20,23 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: { }
+  annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
 # -- podAnnotations is an optional map of annotations to be applied to the Pods
-podAnnotations: { }
+podAnnotations: {}
 
 # -- Optional labels to add to the pods
-podLabels: { }
+podLabels: {}
 
-podSecurityContext: { }
+podSecurityContext: {}
 # fsGroup: 2000
 
-securityContext: { }
+securityContext: {}
   # capabilities:
-  #   drop:
+#   drop:
 #   - ALL
 # readOnlyRootFilesystem: true
 # runAsNonRoot: true
@@ -54,9 +54,21 @@ service:
   labels:
     prometheus.io/target: spring-boot-actuator-instance
 
-extraEnv: { }
+extraEnv: []
+#  - name: "ENV_VAR"
+#    valueFrom:
+#      secretKeyRef:
+#        name: "some-secret-name"
+#        key: "some-key"
+#        optional: true
 
-envFrom: { }
+envFrom: []
+#  - configMapRef:
+#      name: ""
+#      optional: true
+#  - secretRef:
+#      name: ""
+#      optional: true
 
 log4j2Config: |-
   Configuration:
@@ -86,32 +98,32 @@ jvmOptions:
 
 ingress:
   enabled: false
-  annotations: { }
+  annotations: {}
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
-      paths: [ ]
-  tls: [ ]
+      paths: []
+  tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-resources: { }
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #   cpu: 100m
+#   cpu: 100m
 #   memory: 128Mi
 # requests:
 #   cpu: 100m
 #   memory: 128Mi
 
-extraVolumeMounts: { }
+extraVolumeMounts: {}
 
-extraVolumes: { }
+extraVolumes: {}
 
 autoscaling:
   enabled: false
@@ -120,11 +132,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
-nodeSelector: { }
+nodeSelector: {}
 
-tolerations: [ ]
+tolerations: {}
 
-affinity: { }
+affinity: {}
 
 metricsConfig:
   # If `true`, a ServiceMonitor resource for the prometheus-operator is created
@@ -132,11 +144,11 @@ metricsConfig:
   # Optionally sets a target namespace in which to deploy the ServiceMonitor resource
   namespace: ""
   # Optionally sets a namespace for the ServiceMonitor
-  namespaceSelector: { }
+  namespaceSelector: {}
   # Annotations for the ServiceMonitor
-  annotations: { }
+  annotations: {}
   # Additional labels for the ServiceMonitor
-  labels: { }
+  labels: {}
   # Interval at which Prometheus scrapes metrics
   interval: 15s
   # Timeout for scraping

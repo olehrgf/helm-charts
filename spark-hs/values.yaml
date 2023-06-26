@@ -1,0 +1,57 @@
+replicaCount: 1
+
+rbac:
+  create: true
+  serviceAccount:
+    create: true
+    annotations: {}
+    automountServiceAccountToken: true
+
+image:
+  name: apache/spark
+  tag: v3.2.2
+  pullPolicy: IfNotPresent
+
+spark:
+  properties: |
+    spark.history.fs.logDirectory=file:/tmp/spark-events
+
+#spark:
+#  properties: |
+#    spark.history.fs.logDirectory=s3a://<some-bucket>
+#    spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+#    spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.InstanceProfileCredentialsProvider
+
+securityContext: {}
+
+env: []
+
+envFrom: []
+
+service:
+  type: ClusterIP
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1000Mi
+  requests:
+    cpu: 400m
+    memory: 1000Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: {}
+
+affinity: {}
+
+extraVolumeMounts: {}
+
+extraVolumes: {}
