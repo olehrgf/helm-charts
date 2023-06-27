@@ -5,7 +5,7 @@ rbac:
   serviceAccount:
     create: true
     # allow HMS connects to AWS resources via IRSA, such as S3 and KMS.
-    annotations: {EMRExecRole}
+#    annotations: {EMRExecRole}
 
 image:
   name: ghcr.io/melodyyangaws/hive-metastore
