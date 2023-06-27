@@ -48,6 +48,8 @@ autoscaling:
 
 initjob:
   annotation: {}
+#    argocd.argoproj.io/hook: Sync
+#    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   resources: {}
 
 nodeSelector: {}
