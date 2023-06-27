@@ -11,6 +11,21 @@ entries:
     urls:
     - argocd-apps-0.2.0.tgz
     version: 0.2.0
+  hive-metastore:
+  - apiVersion: v1
+    appVersion: 3.0.0
+    created: "2023-06-27T09:58:21.329161983Z"
+    description: The Apache Hive ™ data warehouse software facilitates reading, writing,
+      and managing large datasets residing in distributed storage using SQL. Structure
+      can be projected onto data already in storage. A command line tool and JDBC
+      driver are provided to connect users to Hive.
+    digest: 1e942373fe522590163bc8981cdc312b6e02851bc6db80198e5d54433e758a5a
+    home: https://hive.apache.org/
+    icon: https://hive.apache.org/images/hive_logo_medium.jpg
+    name: hive-metastore
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/hive-metastore-0.0.1/hive-metastore-0.0.1.tgz
+    version: 0.0.1
   spark-hs:
   - apiVersion: v1
     appVersion: 3.2.2
@@ -35,4 +50,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-06-26T14:25:25.481614242Z"
+generated: "2023-06-27T09:58:21.329166284Z"
