@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "hive-metastore.name" . }}-init-schema
+  labels:
+    {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
+  annotations: {{ toYaml .Values.initjob.annotation | nindent 12 }}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "hive-metastore.name" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{.Values.image.name}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources: {{ toYaml .Values.initjob.resources | nindent 12 }}
+          command:
+            - /opt/hive-metastore/bin/schematool
+            - -dbType
+            - postgres
+            - -initSchema
+          env:
+          {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+          {{- end }}
+          {{- include "hive-metastore.secret-env-variables" . | nindent 10 }}
+          {{- if eq .Values.env.HIVE_DB_EXTERNAL "true" }}
+          volumeMounts:
+            - name: hive-conf-templates
+              mountPath: /opt/hive-metastore/conf/templates
+          {{- end}}
+
+      {{- if eq .Values.env.HIVE_DB_EXTERNAL "true" }}
+      volumes:
+        - name: hive-conf-templates
+          configMap:
+            name: {{ template "hive-metastore.name" . }}-conf-templates
+      {{- end }}
