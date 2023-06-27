@@ -36,10 +36,10 @@ spec:
               protocol: TCP
           livenessProbe:
             tcpSocket:
-              port: "9083"
+              port: 9083
           readinessProbe:
             tcpSocket:
-              port: "9083"
+              port: 9083
           {{- if eq .Values.env.HIVE_DB_EXTERNAL "true" }}
           volumeMounts:
             - name: hive-conf-templates
