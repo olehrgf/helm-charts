@@ -4,7 +4,8 @@ metadata:
   name: {{ include "hive-metastore.name" . }}-init-schema
   labels:
     {{- include "hive-metastore.labels" $ | trim | nindent 4 }}
-  annotations: {{ toYaml .Values.initjob.annotation | nindent 12 }}
+  annotations:
+    {{- toYaml .Values.initjob.annotation | nindent 12 }}
 spec:
   template:
     spec:
@@ -14,7 +15,8 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{.Values.image.name}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          resources: {{ toYaml .Values.initjob.resources | nindent 12 }}
+          resources:
+            {{- toYaml .Values.initjob.resources | nindent 12 }}
           command: ["/opt/hive-metastore/bin/init-schema.sh"]
           env:
           {{- range $key, $value := .Values.env }}
