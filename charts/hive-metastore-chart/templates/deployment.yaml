@@ -48,6 +48,21 @@ spec:
               mountPath: /opt/hive-metastore/conf/templates
           {{- end}}
 
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
       {{- if eq .Values.env.HIVE_DB_EXTERNAL "true" }}
       volumes:
         - name: hive-conf-templates

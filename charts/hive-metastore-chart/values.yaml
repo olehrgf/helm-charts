@@ -49,3 +49,9 @@ autoscaling:
 initjob:
   annotation: {}
   resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
