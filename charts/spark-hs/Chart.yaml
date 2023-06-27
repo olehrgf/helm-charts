@@ -4,4 +4,4 @@ description: Spark History Server is the web UI for completed and running (aka i
 home: https://spark.apache.org/
 icon: https://spark.apache.org/docs/latest/img/spark-logo-hd.png
 name: spark-hs
-version: 0.0.2
+version: 0.0.3

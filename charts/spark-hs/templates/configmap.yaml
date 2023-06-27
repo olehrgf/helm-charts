@@ -10,6 +10,6 @@ data:
     {{- tpl . $ | nindent 6 }}
   {{- end }}
   {{- with .Values.logger.properties }}
-  log4j.properties:
+  log4j.properties: |
     {{- tpl . $ | nindent 6 }}
   {{- end }}
