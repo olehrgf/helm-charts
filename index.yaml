@@ -150,6 +150,16 @@ entries:
   spring-boot-microservice:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2023-07-19T09:50:14.106448731Z"
+    description: A common Helm chart for Spring boot application
+    digest: 59233ccf63f038fbca7445266298f3963c9f38653996adf8a0342ca5b1e5305e
+    name: spring-boot-microservice
+    type: application
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/spring-boot-microservice-0.0.5/spring-boot-microservice-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2022-09-23T14:14:50.766696+03:00"
     description: A common Helm chart for Spring boot application
     digest: 4456b7a731739928b1b664efaf9535e3504e1ab1afeff687b050a83e015a3f77
@@ -158,4 +168,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-06-27T14:08:22.195676565Z"
+generated: "2023-07-19T09:50:14.106472531Z"
