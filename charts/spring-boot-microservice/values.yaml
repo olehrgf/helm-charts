@@ -109,6 +109,28 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: "{{ .Values.service.managementPort }}"
+  failureThreshold: 3
+  periodSeconds: 15
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: "{{ .Values.service.managementPort }}"
+  failureThreshold: 10
+  periodSeconds: 15
+
+startupProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: "{{ .Values.service.managementPort }}"
+  failureThreshold: 10
+  initialDelaySeconds: 15
+  periodSeconds: 15
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

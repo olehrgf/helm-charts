@@ -23,6 +23,7 @@ spec:
         {{- toYaml .Values.podLabels | nindent 8 }}
         {{- end }}
     spec:
+      restartPolicy: Always
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
       {{- toYaml . | nindent 8 }}
@@ -56,18 +57,38 @@ spec:
               protocol: TCP
 
           livenessProbe:
+            {{- if .Values.livenessProbe }}
+              {{- tpl (.Values.livenessProbe | toYaml) . | nindent 12 }}
+            {{- else }}
             httpGet:
               path: /actuator/health/liveness
               port: {{.Values.service.managementPort}}
             failureThreshold: 3
             periodSeconds: 15
+            {{- end }}
 
           readinessProbe:
+            {{- if .Values.readinessProbe }}
+              {{- tpl (.Values.readinessProbe | toYaml) . | nindent 12 }}
+            {{- else }}
             httpGet:
               path: /actuator/health/readiness
               port: {{ .Values.service.managementPort }}
             failureThreshold: 10
             periodSeconds: 15
+            {{- end }}
+
+          startupProbe:
+            {{- if .Values.startupProbe }}
+              {{- tpl (.Values.startupProbe | toYaml) . | nindent 12 }}
+            {{- else }}
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{ .Values.service.managementPort }}
+            failureThreshold: 10
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            {{- end }}
 
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
