@@ -113,6 +113,18 @@ entries:
   spark-hs:
   - apiVersion: v1
     appVersion: 3.2.2
+    created: "2023-07-25T07:57:44.542656318Z"
+    description: Spark History Server is the web UI for completed and running (aka
+      incomplete) Spark applications. It is an extension of Spark’s web UI.
+    digest: 66cf45838e18e600557b13d80c0fead1b32ee3bdce4892f377bbe70e43b50f29
+    home: https://spark.apache.org/
+    icon: https://spark.apache.org/docs/latest/img/spark-logo-hd.png
+    name: spark-hs
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/spark-hs-0.0.4/spark-hs-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v1
+    appVersion: 3.2.2
     created: "2023-06-27T14:08:22.195650664Z"
     description: Spark History Server is the web UI for completed and running (aka
       incomplete) Spark applications. It is an extension of Spark’s web UI.
@@ -168,4 +180,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-07-19T09:50:14.106472531Z"
+generated: "2023-07-25T07:57:44.542691518Z"
