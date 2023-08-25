@@ -33,23 +33,23 @@ spec:
   template:
     spec:
       dnsConfig:
-        {{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.brokerSts.nodeAffinity }}
       affinity:
         nodeAffinity:
-          {{ toYaml .Values.brokerSts.nodeAffinity | indent 10 }}
+          {{- toYaml .Values.brokerSts.nodeAffinity | nindent 10 }}
       {{- end }}
       {{- if and (.Values.nodeSelector) (not .Values.brokerSts.nodeSelector) }}
       nodeSelector:
-      {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.brokerSts.nodeSelector }}
       nodeSelector:
-        {{ toYaml .Values.brokerSts.nodeSelector | indent 8 }}
+        {{- toYaml .Values.brokerSts.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.brokerSts.tolerations }}
       tolerations:
-        {{ toYaml .Values.brokerSts.tolerations | indent 8 }}
+        {{- toYaml .Values.brokerSts.tolerations | nindent 8 }}
       {{- end }}
       {{- if .Values.enableTls }}
       volumes:
@@ -101,7 +101,7 @@ spec:
           {{- end }}
           {{- if .Values.brokerTransactionsMetadata.resources }}
           resources:
-            {{ toYaml .Values.brokerTransactionsMetadata.resources | indent 12 }}
+            {{- toYaml .Values.brokerTransactionsMetadata.resources | nindent 12 }}
           {{- end }}
           command: ["sh", "-c"]
           args:

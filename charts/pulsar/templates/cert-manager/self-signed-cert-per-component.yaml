@@ -64,7 +64,7 @@ metadata:
 spec:
   {{- if .Values.tls.broker.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.broker.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.broker.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ required "Must set .Values.tls.broker.tlsSecretName to create certificates for broker" .Values.tls.broker.tlsSecretName }}
   # The wildcard names are needed to connect directly to the broker.
@@ -90,7 +90,7 @@ metadata:
 spec:
   {{- if .Values.tls.bookkeeper.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.bookkeeper.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.bookkeeper.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ .Values.tls.bookkeeper.tlsSecretName }}
   # The wildcard names are needed to connect directly to the broker.
@@ -115,7 +115,7 @@ metadata:
 spec:
   {{- if .Values.tls.proxy.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.proxy.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.proxy.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ required "Must set .Values.tls.proxy.tlsSecretName to create certificates for proxy" .Values.tls.proxy.tlsSecretName }}
   dnsNames:
@@ -136,7 +136,7 @@ metadata:
 spec:
   {{- if .Values.tls.zookeeper.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.zookeeper.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.zookeeper.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ required "Must set .Values.tls.zookeeper.tlsSecretName to create certificates for zookeeper" .Values.tls.zookeeper.tlsSecretName }}
   # The DNS names ending in "-ca" are meant for client access. The wildcard names are used for zookeeper to zookeeper
@@ -165,7 +165,7 @@ metadata:
 spec:
   {{- if .Values.tls.function.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.function.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.function.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ required "Must set .Values.tls.function.tlsSecretName to create certificates for function worker" .Values.tls.function.tlsSecretName }}
   # The DNS names ending in "-ca" are meant for client access. The wildcard names are used for zookeeper to zookeeper
@@ -194,7 +194,7 @@ metadata:
 spec:
   {{- if .Values.tls.autoRecovery.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.autoRecovery.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.autoRecovery.certSpec.privateKey | nindent 4 }}
   {{- end }}
   # TODO This cert is only used for TLS authentication. Figure out what is needed for the name, if anything.
   commonName: autorecovery
@@ -215,7 +215,7 @@ metadata:
 spec:
   {{- if .Values.tls.pulsarAdminConsole.certSpec.privateKey }}
   privateKey:
-    {{ toYaml .Values.tls.pulsarAdminConsole.certSpec.privateKey | indent 4 }}
+    {{- toYaml .Values.tls.pulsarAdminConsole.certSpec.privateKey | nindent 4 }}
   {{- end }}
   secretName: {{ required "Must set .Values.tls.pulsarAdminConsole.tlsSecretName to create certificates for pulsarAdminConsole" .Values.tls.pulsarAdminConsole.tlsSecretName }}
   dnsNames:

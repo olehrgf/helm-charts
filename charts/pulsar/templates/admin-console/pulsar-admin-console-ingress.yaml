@@ -30,7 +30,7 @@ metadata:
     component: {{ .Values.pulsarAdminConsole.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
-{{ toYaml .Values.pulsarAdminConsole.ingress.annotations | indent 4 }}
+    {{- toYaml .Values.pulsarAdminConsole.ingress.annotations | nindent 4 }}
 spec:
   rules:
     - host: {{ .Values.pulsarAdminConsole.ingress.host }}

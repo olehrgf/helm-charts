@@ -34,7 +34,7 @@ metadata:
     {{- end }}
     traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
     {{- if .Values.proxy.ingress.annotations }}
-{{ toYaml .Values.proxy.ingress.annotations | indent 4 }}
+      {{- toYaml .Values.proxy.ingress.annotations | nindent 4 }}
     {{- end }}
 spec:
   rules:

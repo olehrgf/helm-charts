@@ -43,12 +43,12 @@ spec:
         component: {{ .Values.pulsarAdminConsole.component }}
         cluster: {{ template "pulsar.fullname" . }}
         {{- if .Values.pulsarAdminConsole.podLabels }}
-          {{ toYaml .Values.pulsarAdminConsole.podLabels | indent 8 }}
+          {{- toYaml .Values.pulsarAdminConsole.podLabels | nindent 8 }}
         {{- end }}
       annotations:
         checksum/dashboard: {{ include (print $.Template.BasePath "/admin-console/pulsar-admin-console-configmap.yaml") . | sha256sum }}
         {{- if .Values.pulsarAdminConsole.podAnnotations }}
-          {{ toYaml .Values.pulsarAdminConsole.podAnnotations | indent 8 }}
+          {{- toYaml .Values.pulsarAdminConsole.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -58,7 +58,7 @@ spec:
       serviceAccountName: "{{ template "pulsar.fullname" . }}-burnell"
       {{- if .Values.pulsarAdminConsole.tolerations }}
       tolerations:
-        {{ toYaml .Values.pulsarAdminConsole.tolerations | indent 8 }}
+        {{- toYaml .Values.pulsarAdminConsole.tolerations | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.pulsarAdminConsole.gracePeriod }}
       containers:
@@ -67,7 +67,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pulsarAdminConsole.pullPolicy }}
           {{- if .Values.pulsarAdminConsole.resources }}
           resources:
-            {{ toYaml .Values.pulsarAdminConsole.resources | indent 10 }}
+            {{- toYaml .Values.pulsarAdminConsole.resources | nindent 12 }}
           {{- end }}
           ports:
             - name: http

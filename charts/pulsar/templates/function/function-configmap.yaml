@@ -146,7 +146,7 @@ data:
       openIDAttemptAuthenticationProviderToken: "{{ .Values.openid.attemptAuthenticationProviderToken }}"
       {{- end }}
       {{- if .Values.function.customProperties }}
-{{ toYaml .Values.function.customProperties | indent 6 }}
+        {{- toYaml .Values.function.customProperties | nindent 6 }}
       {{- end }}
     clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
     clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
@@ -156,7 +156,7 @@ data:
     {{- end }}
     {{- end }}
     {{- if .Values.function.customConfiguration }}
-{{ toYaml .Values.function.customConfiguration | indent 4 }}
+      {{- toYaml .Values.function.customConfiguration | nindent 4 }}
     {{- end }}
     connectorsDirectory: "./connectors"
     {{- if eq .Values.function.runtime "process" }}

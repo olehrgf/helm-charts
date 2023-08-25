@@ -29,10 +29,10 @@ metadata:
     component: {{ .Values.zoonavigator.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
-{{ toYaml .Values.zoonavigator.service.annotations | indent 4 }}
+    {{- toYaml .Values.zoonavigator.service.annotations | nindent 4 }}
 spec:
   ports:
-{{ toYaml .Values.zoonavigator.service.ports | indent 2 }}
+    {{- toYaml .Values.zoonavigator.service.ports | nindent 2 }}
   clusterIP: None
   selector:
     app: {{ template "pulsar.name" . }}

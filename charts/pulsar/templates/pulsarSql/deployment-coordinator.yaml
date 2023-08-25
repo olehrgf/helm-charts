@@ -40,7 +40,7 @@ spec:
         component: coordinator
     spec:
       dnsConfig:
-{{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.pulsarSQL.image.securityContext.enabled }}
       securityContext:
         runAsUser: {{ .Values.pulsarSQL.image.securityContext.runAsUser }}
@@ -50,7 +50,7 @@ spec:
         - name: config-volume
           configMap:
             name: {{ template "presto.coordinator" . }}
-      {{- if .Values.enableTls }}
+        {{- if .Values.enableTls }}
         - name: certs
           secret:
             secretName: "{{ .Values.tlsSecretName }}"
@@ -167,17 +167,17 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 4
           resources:
-{{ toYaml .Values.pulsarSQL.resources | indent 12 }}
-    {{- with .Values.pulsarSQL.nodeSelector }}
+            {{- toYaml .Values.pulsarSQL.resources | nindent 12 }}
+      {{- with .Values.pulsarSQL.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.pulsarSQL.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarSQL.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.pulsarSQL.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarSQL.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
