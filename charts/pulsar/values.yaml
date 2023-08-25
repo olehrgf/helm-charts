@@ -544,7 +544,8 @@ zookeeper:
   #         operator: In
   #         values:
   #         - region1
-  annotations:
+  podLabels: {}
+  podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
@@ -1095,6 +1096,9 @@ brokerSts:
 ## Job will start as soon as one broker pod is available.
 brokerTransactionsMetadata:
   component: broker-transactions-metadata
+  extraInitCommand: ""
+## When istio is enabled job must exit correctly
+#  extraInitCommand: "x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x"
 
 function:
   component: function
@@ -1322,7 +1326,8 @@ proxy:
       maxUnavailable: 0
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
-  annotations:
+  podLabels: {}
+  podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
   tolerations: []

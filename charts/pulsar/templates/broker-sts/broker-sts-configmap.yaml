@@ -95,7 +95,7 @@ data:
   {{- end }}
   {{- end }}
 
-# Putting this section down here so it's easier to read:
+  # Putting this section down here so it's easier to read:
 {{- if .Values.openid.enabled }}
   PULSAR_PREFIX_openIDAllowedAudience: "{{ .Values.openid.allowedAudience }}"
   PULSAR_PREFIX_openIDRoleClaim: "{{ .Values.openid.roleClaim }}"

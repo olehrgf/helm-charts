@@ -64,9 +64,9 @@ spec:
             {{- end }}
   {{- if and .Values.enableTls .Values.pulsarAdminConsole.ingress.enableTls}}
   tls:
-  - hosts:
-    - {{ .Values.pulsarAdminConsole.ingress.host }}
-    secretName: {{ .Values.tlsSecretName }}
+    - hosts:
+        - {{ .Values.pulsarAdminConsole.ingress.host }}
+      secretName: {{ .Values.tlsSecretName }}
   {{- end }}
 {{- end }}
 {{- end }}

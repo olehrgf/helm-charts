@@ -36,7 +36,7 @@ spec:
   loadBalancerIP: {{ .Values.pulsarAdminConsole.service.loadBalancerIP }}
   {{- end }}
   ports:
-{{ toYaml .Values.pulsarAdminConsole.service.ports | indent 2 }}
+    {{ toYaml .Values.pulsarAdminConsole.service.ports | indent 2 }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}

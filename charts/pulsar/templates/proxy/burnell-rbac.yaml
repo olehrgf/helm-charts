@@ -24,19 +24,19 @@ metadata:
   namespace: {{ .Release.Namespace }}
   {{- end }}
 rules:
-- apiGroups: [""]
-  resources:
-  - secrets
-  verbs: ["get", "create", "list"]
-- apiGroups: [""]
-  resources:
-  - namespaces
-  verbs: ["list"]
-- apiGroups: ["apps"]
-  resources:
-  - deployments
-  - statefulsets
-  verbs: ["list"]
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs: ["get", "create", "list"]
+  - apiGroups: [""]
+    resources:
+      - namespaces
+    verbs: ["list"]
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+      - statefulsets
+    verbs: ["list"]
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -56,7 +56,7 @@ roleRef:
   kind: {{ if .Values.rbac.clusterRoles }}ClusterRole{{ else }}Role{{ end }}
   name: "{{ template "pulsar.fullname" . }}-burnell"
 subjects:
-- kind: ServiceAccount
-  name: "{{ template "pulsar.fullname" . }}-burnell"
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: "{{ template "pulsar.fullname" . }}-burnell"
+    namespace: {{ .Release.Namespace }}
 {{- end }}

@@ -53,71 +53,74 @@ spec:
       {{- end }}
       {{- if .Values.enableTls }}
       volumes:
-      - name: certs
-        secret:
-          secretName: {{ .Values.tls.broker.tlsSecretName | default .Values.tlsSecretName | quote }}
-      - name: certconverter
-        configMap:
-          name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
-          defaultMode: 0755
+        - name: certs
+          secret:
+            secretName: {{ .Values.tls.broker.tlsSecretName | default .Values.tlsSecretName | quote }}
+        - name: certconverter
+          configMap:
+            name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+            defaultMode: 0755
       {{- end }}
       initContainers:
-      - name: wait-broker-ready
-        image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-        imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
-        {{- if .Values.enableTls }}
-        volumeMounts:
-        - name: certs
-          readOnly: true
-          mountPath: /pulsar/certs
-        - name: certconverter
-          mountPath: /pulsar/tools
-        {{- end }}
-        command: ["sh", "-c"]
-        args:
-          - >-
-            {{- if .Values.enableTls }}
-            {{- if .Values.tls.transactionCoordinatorInitialiser.enableHostnameVerification }}
-            until curl --connect-timeout 5 {{ if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}--cacert /pulsar/certs/ca.crt{{ end }} https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
-            {{- else }}
-            until curl --connect-timeout 5 --insecure https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
-            {{- end }}
-            {{- else }}
-            until curl --connect-timeout 5 http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080; do
-            {{- end }}
-              sleep 3;
-            done;
-      containers:
-      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerTransactionsMetadata.component }}"
-        image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-        imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
-        {{- if .Values.enableTls }}
-        volumeMounts:
-        - name: certs
-          readOnly: true
-          mountPath: /pulsar/certs
-        - name: certconverter
-          mountPath: /pulsar/tools
-        {{- end }}
-        {{- if .Values.brokerTransactionsMetadata.resources }}
-        resources:
-          {{ toYaml .Values.brokerTransactionsMetadata.resources | indent 12 }}
-        {{- end }}
-        command: ["sh", "-c"]
-        args:
-          - |
-            {{- if .Values.enableTls }}
-            /pulsar/tools/certconverter.sh &&
-            {{- end }}
-            bin/pulsar initialize-transaction-coordinator-metadata \
-              --cluster {{ template "pulsar.fullname" . }} \
-              {{- if .Values.tls.zookeeper.enabled }}
-              --configuration-store {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281 \
+        - name: wait-broker-ready
+          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
+          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          {{- if .Values.enableTls }}
+          volumeMounts:
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
+            - name: certconverter
+              mountPath: /pulsar/tools
+          {{- end }}
+          command: ["sh", "-c"]
+          args:
+            - >-
+              {{- if .Values.enableTls }}
+              {{- if .Values.tls.transactionCoordinatorInitialiser.enableHostnameVerification }}
+              until curl --connect-timeout 5 {{ if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}--cacert /pulsar/certs/ca.crt{{ end }} https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
               {{- else }}
-              --configuration-store {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181 \
+              until curl --connect-timeout 5 --insecure https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
               {{- end }}
-              --initial-num-transaction-coordinators {{ .Values.brokerSts.transactionCoordinator.initialCount }} \
-              ;
+              {{- else }}
+              until curl --connect-timeout 5 http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080; do
+              {{- end }}
+                sleep 3;
+              done;
+      containers:
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerTransactionsMetadata.component }}"
+          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
+          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          {{- if .Values.enableTls }}
+          volumeMounts:
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
+            - name: certconverter
+              mountPath: /pulsar/tools
+          {{- end }}
+          {{- if .Values.brokerTransactionsMetadata.resources }}
+          resources:
+            {{ toYaml .Values.brokerTransactionsMetadata.resources | indent 12 }}
+          {{- end }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              {{- if .Values.enableTls }}
+              /pulsar/tools/certconverter.sh &&
+              {{- end }}
+              bin/pulsar initialize-transaction-coordinator-metadata \
+                --cluster {{ template "pulsar.fullname" . }} \
+                {{- if .Values.tls.zookeeper.enabled }}
+                --configuration-store {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281 \
+                {{- else }}
+                --configuration-store {{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181 \
+                {{- end }}
+                --initial-num-transaction-coordinators {{ .Values.brokerSts.transactionCoordinator.initialCount }} \
+                ;
+              {{- if .Values.brokerTransactionsMetadata.extraInitCommand }}
+                {{ .Values.brokerTransactionsMetadata.extraInitCommand }}
+              {{- end }}
       restartPolicy: OnFailure
 {{- end }}
 {{- end }}

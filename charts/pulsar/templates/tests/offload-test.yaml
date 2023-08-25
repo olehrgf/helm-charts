@@ -81,22 +81,22 @@ metadata:
     "helm.sh/hook": test-success
 spec:
   containers:
-  - name: "{{ template "pulsar.fullname" . }}-test-admin-proxy-plain-text"
-    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
-    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
-    command: ["sh", "-c"]
-    args:
-    - >
+    - name: "{{ template "pulsar.fullname" . }}-test-admin-proxy-plain-text"
+      image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+      imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+      command: ["sh", "-c"]
+      args:
+        - >
           bin/apply-config-from-env.py conf/client.conf &&
           /pulsar/tests/test.sh
-    env:
-    - name: webServiceUrl
-      value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080/
-    - name: brokerServiceUrl
-      value: pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650/
-    volumeMounts:
-      - name: test-scripts
-        mountPath: /pulsar/tests
+      env:
+        - name: webServiceUrl
+          value: http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080/
+        - name: brokerServiceUrl
+          value: pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650/
+      volumeMounts:
+        - name: test-scripts
+          mountPath: /pulsar/tests
 
   # Do not restart containers after they exit
   restartPolicy: Never

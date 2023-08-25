@@ -61,21 +61,21 @@ spec:
   # The wildcard names are needed to connect directly to the broker pods and will only work when the broker is deployed
   # as a StatefulSet.
   dnsNames:
-  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
-  - "{{ template "pulsar.fullname" . }}-proxy.{{ template "pulsar.serviceDnsSuffix" . }}"
-  - "{{ template "pulsar.fullname" . }}-proxy.{{ .Release.Namespace }}"
-  - "{{ template "pulsar.fullname" . }}-proxy"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ .Release.Namespace }}"
-  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca"
-  {{- if .Values.createCertificates.selfSigned.includeDns }}
-  - "{{ .Values.dnsName}}"
-  {{- end }}
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+    - "{{ template "pulsar.fullname" . }}-proxy.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "{{ template "pulsar.fullname" . }}-proxy.{{ .Release.Namespace }}"
+    - "{{ template "pulsar.fullname" . }}-proxy"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ .Release.Namespace }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca"
+    {{- if .Values.createCertificates.selfSigned.includeDns }}
+    - "{{ .Values.dnsName}}"
+    {{- end }}
   issuerRef:
     name: "{{ template "pulsar.fullname" . }}-ca-issuer"
 {{- end }}

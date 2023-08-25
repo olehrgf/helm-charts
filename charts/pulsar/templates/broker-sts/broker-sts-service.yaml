@@ -30,14 +30,14 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
     {{- if .Values.brokerSts.service.annotations }}
-      {{ toYaml .Values.brokerSts.service.annotations | indent 4 }}
+      {{- toYaml .Values.brokerSts.service.annotations | nindent 4 }}
     {{- end }}
     {{- if .Values.extra.dnsOnBroker }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
     {{- end }}
 spec:
   ports:
-    {{ toYaml .Values.brokerSts.service.ports | indent 2 }}
+    {{- toYaml .Values.brokerSts.service.ports | nindent 2 }}
   {{- if .Values.brokerSts.service.headless }}
   clusterIP: None
   {{- end }}

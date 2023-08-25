@@ -26,11 +26,11 @@ metadata:
     "helm.sh/hook": test-success
 spec:
   containers:
-  - name: "{{ template "pulsar.fullname" . }}-test-admin-proxy-tls"
-    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
-    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
-    command: ["/pulsar/bin/pulsar-admin"]
-    args: ["--admin-url", "https://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443", "tenants", "list"]
+    - name: "{{ template "pulsar.fullname" . }}-test-admin-proxy-tls"
+      image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+      imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+      command: ["/pulsar/bin/pulsar-admin"]
+      args: ["--admin-url", "https://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443", "tenants", "list"]
   # Do not restart containers after they exit
   restartPolicy: Never
 ---
@@ -46,28 +46,28 @@ spec:
       secret:
         secretName: "{{ .Values.tlsSecretName }}"
   containers:
-  - name: "{{ template "pulsar.fullname" . }}-test-client-proxy-tls"
-    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
-    env:
+    - name: "{{ template "pulsar.fullname" . }}-test-client-proxy-tls"
+      image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+      env:
       {{- if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}
-      - name: tlsTrustCertsFilePath
-        value: /pulsar/certs/ca.crt
+        - name: tlsTrustCertsFilePath
+          value: /pulsar/certs/ca.crt
       {{- else }}
-      - name: tlsTrustCertsFilePath
-        value:  "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+        - name: tlsTrustCertsFilePath
+          value: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
       {{- end }}
-    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
-    command: ["sh", "-c"]
-    args:
-    - >
+      imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+      command: ["sh", "-c"]
+      args:
+        - >
       {{- if .Values.enableTokenAuth }}
-      cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
       {{- end }}
-      bin/apply-config-from-env.py conf/client.conf &&
-      /pulsar/bin/pulsar-client --url pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651 produce -m hello public/default/test
-    volumeMounts:
-      - name: certs
-        mountPath: /pulsar/certs
+          bin/apply-config-from-env.py conf/client.conf &&
+          /pulsar/bin/pulsar-client --url pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651 produce -m hello public/default/test
+      volumeMounts:
+        - name: certs
+          mountPath: /pulsar/certs
   # Do not restart containers after they exit
   restartPolicy: Never
 {{- end }}

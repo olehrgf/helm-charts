@@ -33,31 +33,31 @@ spec:
     metadata:
       labels:
         {{- if .Values.zookeeperMetadata.podLabels }}
-          {{ toYaml .Values.zookeeperMetadata.podLabels | indent 8 }}
+          {{- toYaml .Values.zookeeperMetadata.podLabels | nindent 8 }}
         {{- end }}
       annotations:
         {{- if .Values.zookeeperMetadata.podAnnotations }}
-          {{ toYaml .Values.zookeeperMetadata.podAnnotations | indent 8 }}
+          {{- toYaml .Values.zookeeperMetadata.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
       dnsConfig:
-        {{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.zookeeper.nodeAffinity }}
       affinity:
         nodeAffinity:
-          {{ toYaml .Values.zookeeper.nodeAffinity | indent 10 }}
+          {{- toYaml .Values.zookeeper.nodeAffinity | nindent 10 }}
       {{- end }}
       {{- if and (.Values.nodeSelector) (not .Values.zookeeper.nodeSelector) }}
       nodeSelector:
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zookeeper.nodeSelector }}
       nodeSelector:
-        {{ toYaml .Values.zookeeper.nodeSelector | indent 8 }}
+        {{- toYaml .Values.zookeeper.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zookeeper.tolerations }}
       tolerations:
-        {{ toYaml .Values.zookeeper.tolerations | indent 8 }}
+        {{- toYaml .Values.zookeeper.tolerations | nindent 8 }}
       {{- end }}
       {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
       volumes:
@@ -95,7 +95,7 @@ spec:
           {{- end }}
           {{- if .Values.zookeeperMetadata.resources }}
           resources:
-            {{ toYaml .Values.zookeeperMetadata.resources | indent 10 }}
+            {{- toYaml .Values.zookeeperMetadata.resources | nindent 12 }}
           {{- end }}
           command: ["timeout", "{{ .Values.zookeeperMetadata.initTimeout | default 60 }}", "sh", "-c"]
           args:
@@ -118,8 +118,8 @@ spec:
                 {{- end }}
                 --web-service-url http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080/ \
                 --broker-service-url pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650/ ;
-              {{- if .Values.zookeeperMetadata.extraInitCommand }}
-                {{ .Values.zookeeperMetadata.extraInitCommand }}
-              {{- end }}
+                {{- if .Values.zookeeperMetadata.extraInitCommand }}
+                  {{ .Values.zookeeperMetadata.extraInitCommand }}
+                {{- end }}
       restartPolicy: OnFailure
 {{- end }}

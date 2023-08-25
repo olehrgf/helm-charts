@@ -71,30 +71,30 @@ spec:
         {{- end }}
       initContainers:
       {{- if .Values.pulsarHeartbeat.enableWaitContainers | default true }}
-      # This init container will wait for bookkeeper to be ready before
-      - name: wait-bookkeeper-ready
-        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
-        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
-        {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
-        volumeMounts:
-        - name: certs
-          readOnly: true
-          mountPath: /pulsar/certs
-        {{- end }}
-        command: ["sh", "-c"]
-        args:
-          - >-
-            {{- if .Values.enableTls }}
-            {{- if .Values.tls.pulsarHeartbeat.enableHostnameVerification }}
-            until curl --connect-timeout 5  {{ if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}--cacert /pulsar/certs/ca.crt{{ end }} https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
-            {{- else }}
-            until curl --connect-timeout 5  --insecure https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
-            {{- end }}
-            {{- else }}
-            until curl --connect-timeout 5 http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080; do
-            {{- end }}
-              sleep 3;
-            done;
+        # This init container will wait for bookkeeper to be ready before
+        - name: wait-bookkeeper-ready
+          image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+          imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
+          {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
+          volumeMounts:
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
+          {{- end }}
+          command: ["sh", "-c"]
+          args:
+            - >-
+              {{- if .Values.enableTls }}
+              {{- if .Values.tls.pulsarHeartbeat.enableHostnameVerification }}
+              until curl --connect-timeout 5  {{ if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}--cacert /pulsar/certs/ca.crt{{ end }} https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
+              {{- else }}
+              until curl --connect-timeout 5  --insecure https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
+              {{- end }}
+              {{- else }}
+              until curl --connect-timeout 5 http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080; do
+              {{- end }}
+                sleep 3;
+              done;
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -117,36 +117,36 @@ spec:
           resources:
             {{- toYaml .Values.pulsarHeartbeat.resources | nindent 12 }}
           volumeMounts:
-          - name: config-volume
-            mountPath: /config
+            - name: config-volume
+              mountPath: /config
           {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
-          - name: certs
-            readOnly: true
-            mountPath: /pulsar/certs
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
           {{- end }}
           env:
-          - name: DeployEnv
-            value: production
-          - name: ClusterName
-            value: "{{ template "pulsar.fullname" . }}"
-          - name: BrokerProxyURL
+            - name: DeployEnv
+              value: production
+            - name: ClusterName
+              value: "{{ template "pulsar.fullname" . }}"
+            - name: BrokerProxyURL
             {{- if .Values.enableTls }}
-            value: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+              value: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
             {{- else }}
-            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
+              value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
             {{- end }}
-          {{- if .Values.enableTokenAuth }}
-          - name: PulsarToken
-            valueFrom:
-              secretKeyRef:
-                name: token-superuser
-                key: superuser.jwt
-          {{- end }}
-          - name: PulsarURL
+            {{- if .Values.enableTokenAuth }}
+            - name: PulsarToken
+              valueFrom:
+                secretKeyRef:
+                  name: token-superuser
+                  key: superuser.jwt
+            {{- end }}
+            - name: PulsarURL
             {{- if .Values.enableTls }}
-            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+              value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
             {{- else }}
-            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
+              value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
             {{- end }}
       {{- with .Values.pulsarHeartbeat.nodeSelector }}
       nodeSelector:

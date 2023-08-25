@@ -43,37 +43,37 @@ spec:
         component: {{ .Values.bastion.component }}
         cluster: {{ template "pulsar.fullname" . }}
         {{- if .Values.bastion.podLabels }}
-          {{ toYaml .Values.bastion.podLabels | indent 8 }}
+          {{- toYaml .Values.bastion.podLabels | nindent 8 }}
         {{- end }}
       annotations:
         {{- if .Values.restartOnConfigMapChange.enabled }}
-          checksum/config: {{ include (print $.Template.BasePath "/bastion/bastion-configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/bastion/bastion-configmap.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.bastion.podAnnotations }}
-          {{ toYaml .Values.bastion.podAnnotations | indent 8 }}
+          {{- toYaml .Values.bastion.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
       dnsConfig:
-        {{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
       {{- if and (.Values.nodeSelector) (not .Values.bastion.nodeSelector) }}
       nodeSelector:
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.bastion.nodeSelector }}
       nodeSelector:
-        {{ toYaml .Values.bastion.nodeSelector | indent 8 }}
+        {{- toYaml .Values.bastion.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.bastion.nodeAffinity }}
       affinity:
         nodeAffinity:
-          {{ toYaml .Values.bastion.nodeAffinity | indent 10 }}
+          {{- toYaml .Values.bastion.nodeAffinity | nindent 10 }}
       {{- end }}
       {{- if .Values.bastion.tolerations }}
       tolerations:
-        {{ toYaml .Values.bastion.tolerations | indent 8 }}
+        {{- toYaml .Values.bastion.tolerations | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bastion.gracePeriod }}
       volumes:
@@ -100,82 +100,82 @@ spec:
                 path: ca.crt
         {{- end }}
       containers:
-      {{- if .Values.extra.pulsarHealer }}
-      - name: "{{ template "pulsar.fullname" . }}-burnell"
-        image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
-        imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
-        {{- if .Values.proxy.burnellResources }}
-        resources:
-          {{ toYaml .Values.proxy.burnellResources | indent 12 }}
-        {{- end }}
-        ports:
-        - name: burnell
-          containerPort: 8964
-        volumeMounts:
+        {{- if .Values.extra.pulsarHealer }}
+        - name: "{{ template "pulsar.fullname" . }}-burnell"
+          image: "{{ .Values.image.burnell.repository }}:{{ .Values.image.burnell.tag }}"
+          imagePullPolicy: {{ .Values.image.burnell.pullPolicy }}
+          {{- if .Values.proxy.burnellResources }}
+          resources:
+            {{- toYaml .Values.proxy.burnellResources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: burnell
+              containerPort: 8964
+          volumeMounts:
           {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
-          - name: certs
-            readOnly: true
-            mountPath: /pulsar/certs
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
           {{- end }}
-        env:
-          - name: PORT
-            value: "8964"
-          - name: ClusterName
-            value: "{{ template "pulsar.fullname" . }}"
-          - name: SuperRoles
-            value: {{ .Values.superUserRoles }}
-          - name: ProcessMode
-            value: "healer"
-          - name: PulsarNamespace
-            value: {{ .Release.Namespace }}
-          - name: LogLevel
-            value: {{ .Values.burnell.logLevel | default "info" }}
-          - name: PrivateKeySecretName
-            value: {{ .Values.tokenPrivateKeyFile }}
-          - name: PublicKeySecretName
-            value: {{ .Values.tokenPublicKeyFile }}
-      {{- end }}
-      - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
-        image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
-        imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
-        {{- if .Values.bastion.resources }}
-        resources:
-          {{ toYaml .Values.bastion.resources | indent 10 }}
+          env:
+            - name: PORT
+              value: "8964"
+            - name: ClusterName
+              value: "{{ template "pulsar.fullname" . }}"
+            - name: SuperRoles
+              value: {{ .Values.superUserRoles }}
+            - name: ProcessMode
+              value: "healer"
+            - name: PulsarNamespace
+              value: {{ .Release.Namespace }}
+            - name: LogLevel
+              value: {{ .Values.burnell.logLevel | default "info" }}
+            - name: PrivateKeySecretName
+              value: {{ .Values.tokenPrivateKeyFile }}
+            - name: PublicKeySecretName
+              value: {{ .Values.tokenPublicKeyFile }}
         {{- end }}
-        command: ["sh", "-c"]
-        volumeMounts:
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
+          image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+          imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+          {{- if .Values.bastion.resources }}
+          resources:
+            {{- toYaml .Values.bastion.resources | nindent 12 }}
+          {{- end }}
+          command: ["sh", "-c"]
+          volumeMounts:
           {{- if .Values.enableTokenAuth }}
-          - mountPath: "/pulsar/token-private-key"
-            name: token-private-key
-            readOnly: true
-          - mountPath: "/pulsar/token-public-key"
-            name: token-public-key
-            readOnly: true
-          - mountPath: "/pulsar/token-admin"
-            name: token-admin
-            readOnly: true
-          - mountPath: "/pulsar/token-superuser"
-            name: token-superuser
-            readOnly: true
+            - mountPath: "/pulsar/token-private-key"
+              name: token-private-key
+              readOnly: true
+            - mountPath: "/pulsar/token-public-key"
+              name: token-public-key
+              readOnly: true
+            - mountPath: "/pulsar/token-admin"
+              name: token-admin
+              readOnly: true
+            - mountPath: "/pulsar/token-superuser"
+              name: token-superuser
+              readOnly: true
           {{- end }}
           {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
-          - name: certs
-            readOnly: true
-            mountPath: /pulsar/certs
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
           {{- end }}
-        args:
-        - >
+          args:
+            - >
           {{- if .Values.enableTokenAuth }}
-          cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+              cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
           {{- end }}
           {{- if .Values.bastion.installDebugTools }}
-          apt-get update &&
-          apt-get install vim tcpdump -y &&
-          echo "PATH=\$PATH:/pulsar/bin" >> /root/.bashrc &&
+              apt-get update &&
+              apt-get install vim tcpdump -y &&
+              echo "PATH=\$PATH:/pulsar/bin" >> /root/.bashrc &&
           {{- end }}
-          bin/apply-config-from-env.py conf/client.conf &&
-          exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
-        envFrom:
-        - configMapRef:
-            name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
+              bin/apply-config-from-env.py conf/client.conf &&
+              exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+          envFrom:
+            - configMapRef:
+                name: "{{ template "pulsar.fullname" . }}-{{ .Values.bastion.component }}"
 {{- end }}
