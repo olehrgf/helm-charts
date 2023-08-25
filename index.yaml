@@ -110,6 +110,27 @@ entries:
     urls:
     - https://github.com/olehrgf/helm-charts/releases/download/hive-metastore-0.0.1/hive-metastore-0.0.1.tgz
     version: 0.0.1
+  pulsar:
+  - apiVersion: v2
+    appVersion: 3.1.0
+    created: "2023-08-25T11:48:00.804738287Z"
+    dependencies:
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 44.x.x
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.8.x
+    description: Apache Pulsar Helm chart for Kubernetes (Fork from https://github.com/datastax/pulsar-helm-chart)
+    digest: 5971dfcb3d86134f05718732a0c4954e9b036b893013f04859df5e8055e65825
+    maintainers:
+    - name: olehrgf
+    name: pulsar
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/pulsar-0.0.1/pulsar-0.0.1.tgz
+    version: 0.0.1
   spark-hs:
   - apiVersion: v1
     appVersion: 3.2.2
@@ -180,4 +201,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-07-25T07:57:44.542691518Z"
+generated: "2023-08-25T11:48:00.804778288Z"
