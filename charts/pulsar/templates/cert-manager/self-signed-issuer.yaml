@@ -1,0 +1,81 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.createCertificates.selfSigned.enabled }}
+# Self signed issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-self-signed-issuer"
+  namespace: "{{ .Release.Namespace }}"
+spec:
+  selfSigned: {}
+---
+# CA certificate from self-signed issuer
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-ca-certificate"
+  namespace: "{{ .Release.Namespace }}"
+spec:
+  secretName: "{{ template "pulsar.fullname" . }}-ss-ca"
+  commonName: "{{ template "pulsar.serviceDnsSuffix" . }}"
+  usages:
+    - server auth
+    - client auth
+  isCA: true
+  issuerRef:
+    name: "{{ template "pulsar.fullname" . }}-self-signed-issuer"
+---
+# Issuer using the self-signed CA certificate
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-ca-issuer"
+spec:
+  ca:
+    secretName: {{ template "pulsar.fullname" . }}-ss-ca
+---
+# Self-signed certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-server-tls"
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: {{ .Values.tlsSecretName }}
+  # The wildcard names are needed to connect directly to the broker pods and will only work when the broker is deployed
+  # as a StatefulSet.
+  dnsNames:
+  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
+  - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+  - "{{ template "pulsar.fullname" . }}-proxy.{{ template "pulsar.serviceDnsSuffix" . }}"
+  - "{{ template "pulsar.fullname" . }}-proxy.{{ .Release.Namespace }}"
+  - "{{ template "pulsar.fullname" . }}-proxy"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ .Release.Namespace }}"
+  - "{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca"
+  {{- if .Values.createCertificates.selfSigned.includeDns }}
+  - "{{ .Values.dnsName}}"
+  {{- end }}
+  issuerRef:
+    name: "{{ template "pulsar.fullname" . }}-ca-issuer"
+{{- end }}

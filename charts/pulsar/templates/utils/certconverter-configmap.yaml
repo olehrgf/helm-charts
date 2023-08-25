@@ -1,0 +1,91 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.enableTls }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    cluster: {{ template "pulsar.fullname" . }}
+    component: certconverter
+data:
+  certconverter.sh: |
+    #!/bin/bash
+    name=pulsar
+    crtFile=/pulsar/certs/tls.crt
+    keyFile=/pulsar/certs/tls.key
+
+    {{- if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}
+    caFile=/pulsar/certs/ca.crt
+    {{- else }}
+    caFile={{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}
+    {{- end }}
+    p12File=/pulsar/tls.p12
+    keyStoreFile=/pulsar/tls.keystore.jks
+    trustStoreFile=/pulsar/tls.truststore.jks
+
+    head /dev/urandom | base64 | head -c 24 > /pulsar/keystoreSecret.txt
+    export tlsTrustStorePassword=$(cat /pulsar/keystoreSecret.txt)
+    export PF_tlsTrustStorePassword=$(cat /pulsar/keystoreSecret.txt)
+    export tlsKeyStorePassword=$(cat /pulsar/keystoreSecret.txt)
+    export PF_tlsKeyStorePassword=$(cat /pulsar/keystoreSecret.txt)
+    export PULSAR_PREFIX_brokerClientTlsTrustStorePassword=$(cat /pulsar/keystoreSecret.txt)
+
+    openssl pkcs12 \
+        -export \
+        -in ${crtFile} \
+        -inkey ${keyFile} \
+        -out ${p12File} \
+        -name ${name} \
+        -passout "file:/pulsar/keystoreSecret.txt"
+
+    keytool -importkeystore \
+        -srckeystore ${p12File} \
+        -srcstoretype PKCS12 -srcstorepass:file "/pulsar/keystoreSecret.txt" \
+        -alias ${name} \
+        -destkeystore ${keyStoreFile} \
+        -deststorepass:file "/pulsar/keystoreSecret.txt"
+
+    keytool -import \
+        -file ${caFile} \
+        -storetype JKS \
+        -alias ${name} \
+        -keystore ${trustStoreFile} \
+        -storepass:file "/pulsar/keystoreSecret.txt" \
+        -trustcacerts -noprompt
+
+    {{- if .Values.tls.zookeeper.enabled }}
+    {{- if .Values.tls.zookeeper.configureKeystoreWithPasswordFile }}
+    passwordArg="passwordPath=/pulsar/keystoreSecret.txt"
+    {{- else }}
+    passwordArg="password=$(cat /pulsar/keystoreSecret.txt)"
+    {{- end }}
+
+    echo $'\n' >> conf/pulsar_env.sh
+    echo "PULSAR_EXTRA_OPTS=\"${PULSAR_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.${passwordArg} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.${passwordArg} -Dzookeeper.sslQuorum=true -Dzookeeper.serverCnxnFactory=org.apache.zookeeper.server.NettyServerCnxnFactory -Dzookeeper.ssl.quorum.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.quorum.keyStore.${passwordArg} -Dzookeeper.ssl.quorum.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.quorum.trustStore.${passwordArg} -Dzookeeper.ssl.hostnameVerification={{ .Values.tls.zookeeper.enableHostnameVerification }} -Dzookeeper.ssl.quorum.hostnameVerification={{ .Values.tls.zookeeper.enableHostnameVerification }}\"" >> conf/pulsar_env.sh
+
+    echo $'\n' >> conf/bkenv.sh
+    echo "BOOKIE_EXTRA_OPTS=\"${BOOKIE_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.${passwordArg} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.${passwordArg} -Dzookeeper.ssl.hostnameVerification={{ .Values.tls.zookeeper.enableHostnameVerification }}\"" >> conf/bkenv.sh
+    {{- end }}
+
+{{- end }}

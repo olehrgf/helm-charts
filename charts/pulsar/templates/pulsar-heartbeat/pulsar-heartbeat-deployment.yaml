@@ -1,0 +1,163 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.pulsarHeartbeat }}
+apiVersion: apps/v1
+kind: Deployment
+# trigger a build
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarHeartbeat.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.pulsarHeartbeat.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  replicas: {{ .Values.pulsarHeartbeat.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.pulsarHeartbeat.component }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.pulsarHeartbeat.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/pulsar-heartbeat/pulsar-heartbeat-configmap.yaml") . | sha256sum }}
+{{ toYaml .Values.pulsarHeartbeat.annotations | indent 8 }}
+    spec:
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarHeartbeat.component }}"
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: "{{ include "pulsar.fullname" . }}-{{ .Values.pulsarHeartbeat.component }}-config"
+        {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled)}}
+        - name: certs
+          secret:
+            secretName: {{ .Values.tls.ssCaCert.tlsSecretName | default (.Values.tls.rootCaSecretName | default .Values.tlsSecretName) | quote }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        {{- end }}
+      initContainers:
+      {{- if .Values.pulsarHeartbeat.enableWaitContainers | default true }}
+      # This init container will wait for bookkeeper to be ready before
+      - name: wait-bookkeeper-ready
+        image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+        imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
+        {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
+        volumeMounts:
+        - name: certs
+          readOnly: true
+          mountPath: /pulsar/certs
+        {{- end }}
+        command: ["sh", "-c"]
+        args:
+          - >-
+            {{- if .Values.enableTls }}
+            {{- if .Values.tls.pulsarHeartbeat.enableHostnameVerification }}
+            until curl --connect-timeout 5  {{ if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}--cacert /pulsar/certs/ca.crt{{ end }} https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
+            {{- else }}
+            until curl --connect-timeout 5  --insecure https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443; do
+            {{- end }}
+            {{- else }}
+            until curl --connect-timeout 5 http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080; do
+            {{- end }}
+              sleep 3;
+            done;
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.pulsarHeartbeat.repository }}:{{ .Values.image.pulsarHeartbeat.tag }}"
+          imagePullPolicy: {{ .Values.image.pulsarHeartbeat.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.pulsarHeartbeat.port | default 8089 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+          resources:
+            {{- toYaml .Values.pulsarHeartbeat.resources | nindent 12 }}
+          volumeMounts:
+          - name: config-volume
+            mountPath: /config
+          {{- if and .Values.enableTls (or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled) }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          env:
+          - name: DeployEnv
+            value: production
+          - name: ClusterName
+            value: "{{ template "pulsar.fullname" . }}"
+          - name: BrokerProxyURL
+            {{- if .Values.enableTls }}
+            value: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+            {{- else }}
+            value: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
+            {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - name: PulsarToken
+            valueFrom:
+              secretKeyRef:
+                name: token-superuser
+                key: superuser.jwt
+          {{- end }}
+          - name: PulsarURL
+            {{- if .Values.enableTls }}
+            value: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+            {{- else }}
+            value: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
+            {{- end }}
+      {{- with .Values.pulsarHeartbeat.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarHeartbeat.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarHeartbeat.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

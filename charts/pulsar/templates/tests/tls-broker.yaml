@@ -1,0 +1,73 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.enableTests }}
+{{- if .Values.enableTls }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-admin-tls-broker"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: "{{ template "pulsar.fullname" . }}-test-admin-broker-tls"
+    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+    command: ["/pulsar/bin/pulsar-admin"]
+    args: ["--admin-url", "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443", "tenants", "list"]
+  # Do not restart containers after they exit
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-client-tls-broker"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  volumes:
+    - name: certs
+      secret:
+        secretName: "{{ .Values.tlsSecretName }}"
+  containers:
+  - name: "{{ template "pulsar.fullname" . }}-test-client-broker-tls"
+    image: "{{ .Values.image.bastion.repository }}:{{ .Values.image.bastion.tag }}"
+    env:
+      {{- if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}
+      - name: tlsTrustCertsFilePath
+        value: /pulsar/certs/ca.crt
+      {{- else }}
+      - name: tlsTrustCertsFilePath
+        value:  "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+      {{- end }}
+    imagePullPolicy: {{ .Values.image.bastion.pullPolicy }}
+    command: ["sh", "-c"]
+    args:
+    - >
+      {{- if .Values.enableTokenAuth }}
+      cat /pulsar/token-superuser/superuser.jwt | tr -d '\n' > /pulsar/token-superuser-stripped.jwt &&
+      {{- end }}
+      bin/apply-config-from-env.py conf/client.conf &&
+      /pulsar/bin/pulsar-client --url pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651 produce -m hello public/default/test
+    volumeMounts:
+      - name: certs
+        mountPath: /pulsar/certs
+  # Do not restart containers after they exit
+  restartPolicy: Never
+{{- end }}
+{{- end }}

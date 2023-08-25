@@ -1,0 +1,209 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.zookeepernp }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.zookeepernp.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  serviceName: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}"
+  replicas: {{ .Values.zookeepernp.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.zookeepernp.component }}
+  updateStrategy:
+    {{ toYaml .Values.zookeepernp.updateStrategy | indent 4 }}
+  podManagementPolicy: {{ .Values.zookeepernp.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.zookeepernp.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+        {{- if .Values.zookeepernp.podLabels }}
+          {{ toYaml .Values.zookeepernp.podLabels | indent 8 }}
+        {{- end }}
+      annotations:
+      {{- if .Values.restartOnConfigMapChange.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/zookeeper-nonpersist/zookeeper-configmap.yaml") . | sha256sum }}
+      {{- end }}
+      {{- if .Values.zookeepernp.podAnnotations }}
+        {{ toYaml .Values.zookeepernp.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      dnsConfig:
+        {{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: pulsar-priority
+      {{- end }}
+      {{- if and (.Values.nodeSelector) (not .Values.zookeepernp.nodeSelector) }}
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.zookeepernp.nodeSelector }}
+      nodeSelector:
+      {{ toYaml .Values.zookeepernp.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.zookeepernp.tolerations }}
+      tolerations:
+        {{ toYaml .Values.zookeepernp.tolerations | indent 8 }}
+      {{- end }}
+      affinity:
+        {{- if .Values.zookeepernp.nodeAffinity }}
+        nodeAffinity:
+          {{ toYaml .Values.zookeepernp.nodeAffinity | indent 10 }}
+        {{- end }}
+        {{- if .Values.enableAntiAffinity }}
+        podAntiAffinity:
+        {{- if .Values.zookeepernp.podAntiAffinity }}
+          {{ toYaml .Values.zookeepernp.podAntiAffinity | indent 10 }}
+        {{- else }}
+          {{- if .Values.antiAffinity.host.enabled }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "{{ template "pulsar.name" . }}"
+                  - key: "release"
+                    operator: In
+                    values:
+                      - {{ .Release.Name }}
+                  - key: "component"
+                    operator: In
+                    values:
+                      - {{ .Values.zookeeper.component }}
+              topologyKey: "kubernetes.io/hostname"
+          {{- end }}
+          {{- if .Values.antiAffinity.zone.enabled }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: failure-domain.beta.kubernetes.io/zone
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                        - "{{ template "pulsar.name" . }}"
+                    - key: "release"
+                      operator: In
+                      values:
+                        - {{ .Release.Name }}
+                    - key: "component"
+                      operator: In
+                      values:
+                        - {{ .Values.zookeeper.component }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.zookeepernp.gracePeriod }}
+      containers:
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}"
+          image: "{{ .Values.image.zookeeper.repository }}:{{ .Values.image.zookeeper.tag }}"
+          imagePullPolicy: {{ .Values.image.zookeeper.pullPolicy }}
+          {{- if .Values.zookeepernp.resources }}
+          resources:
+            {{ toYaml .Values.zookeepernp.resources | indent 10 }}
+          {{- end }}
+          command: ["sh", "-c"]
+          args:
+            - >
+              bin/apply-config-from-env.py conf/zookeeper.conf &&
+              {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+              /pulsar/tools/certconverter.sh &&
+              {{- end }}
+              /pulsar/zookeeper-config/generate-zookeeper-config-mixed.sh conf/zookeeper.conf &&
+              OPTS="${OPTS} -Dlog4j2.formatMsgNoLookups=true" exec bin/pulsar zookeeper
+          ports:
+            - name: client
+              containerPort: 2181
+            - name: server
+              containerPort: 2888
+            - name: leader-election
+              containerPort: 3888
+            - name: http
+              containerPort: 8000
+          env:
+            - name: ZOOKEEPER_SERVERS
+              value:
+            {{ include "pulsar.zkConnectString" . }}
+          envFrom:
+            - configMapRef:
+                name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}"
+          {{- if .Values.zookeepernp.probe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - timeout
+                - "{{ .Values.zookeepernp.probe.timeout }}"
+                - "bin/pulsar-zookeeper-ruok.sh"
+            initialDelaySeconds: {{ .Values.zookeepernp.probe.initial }}
+            periodSeconds: {{ .Values.zookeepernp.probe.period }}
+            timeoutSeconds: {{ .Values.zookeepernp.probe.timeout }}
+          livenessProbe:
+            exec:
+              command:
+                - timeout
+                - "{{ .Values.zookeepernp.probe.timeout }}"
+                - "bin/pulsar-zookeeper-ruok.sh"
+            initialDelaySeconds: {{ .Values.zookeepernp.probe.initial }}
+            periodSeconds: {{ .Values.zookeepernp.probe.period }}
+            timeoutSeconds: {{ .Values.zookeepernp.probe.timeout }}
+          {{- end }}
+          volumeMounts:
+            {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+            - name: certs
+              readOnly: true
+              mountPath: /pulsar/certs
+            - name: certconverter
+              mountPath: /pulsar/tools
+            {{- end }}
+            - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-{{ .Values.zookeepernp.volumes.data.name }}"
+              mountPath: /pulsar/data
+            - name: zookeeper-config
+              mountPath: /pulsar/zookeeper-config
+      volumes:
+        {{- if and .Values.enableTls .Values.tls.zookeeper.enabled}}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}"
+        - name: certconverter
+          configMap:
+            name: "{{ template "pulsar.fullname" . }}-certconverter-configmap"
+            defaultMode: 0755
+        {{- end }}
+        - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zookeepernp.component }}-{{ .Values.zookeepernp.volumes.data.name }}"
+          emptyDir: {}
+        - name: zookeeper-config
+          configMap:
+            name: "{{ template "pulsar.fullname" . }}-zookeeper-config"
+            defaultMode: 0755
+{{- end }}

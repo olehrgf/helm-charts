@@ -1,0 +1,118 @@
+#
+#  Copyright 2022 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.wsproxy }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}-ws"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.proxy.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+data:
+  {{- if .Values.proxy.disableZookeeperDiscovery }}
+  {{- if .Values.proxy.useStsBrokersForDiscovery }}
+  brokerServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
+  brokerServiceUrlTls: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+  serviceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
+  serviceUrlTls: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+  {{- else }}
+  brokerServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
+  brokerServiceUrlTls: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+  serviceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
+  serviceUrlTls: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+  {{- end }}
+  {{- end }}
+  {{- if .Values.proxy.zookeeperClientEnabled }}
+  zookeeperServers:
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
+    {{- else }}
+    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
+    {{- end }}
+  configurationStoreServers:
+    {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
+    {{- else }}
+    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
+    {{- end }}
+  {{- end }}
+  clusterName: {{ template "pulsar.fullname" . }}
+  webServicePort: "{{ .Values.proxy.wsProxyPort }}"
+  {{- if .Values.enableTokenAuth }}
+  brokerClientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
+  brokerClientAuthenticationParameters: "file:///pulsar/token-websocket/websocket.jwt"
+  authenticationEnabled: "true"
+  authenticationProviders: "{{ .Values.proxy.wsAuthenticationProviders }}"
+  tokenPublicKey: "file:///pulsar/token-public-key/{{ .Values.tokenPublicKeyFile }}"
+  authorizationEnabled: "{{ .Values.proxy.authorizationEnabled }}"
+  superUserRoles: "{{ .Values.superUserRoles }}"
+  {{- if .Values.keycloak.enabled }}
+  PULSAR_PREFIX_openIDAllowedTokenIssuers: "{{ template "pulsar.get.http.or.https" . }}{{ template "pulsar.keycloak.fullname" .}}{{ template "pulsar.keycloak.issuer.port" .}}/realms/{{ .Values.keycloak.realm }},{{ template "pulsar.get.http.or.https" . }}{{ template "pulsar.keycloak.fullname" .}}.{{ .Release.Namespace }}{{ template "pulsar.keycloak.issuer.port" .}}/realms/{{ .Values.keycloak.realm }},{{ template "pulsar.get.http.or.https" . }}{{ template "pulsar.keycloak.fullname" .}}.{{ template "pulsar.serviceDnsSuffix" . }}{{ template "pulsar.keycloak.issuer.port" .}}/realms/{{ .Values.keycloak.realm }}"
+  {{- else if .Values.openid.enabled }}
+  PULSAR_PREFIX_openIDAllowedTokenIssuers: "{{ .Values.openid.allowedIssuerUrls }}"
+  {{- end }}
+  {{- end }}
+{{- if .Values.openid.enabled }}
+  PULSAR_PREFIX_openIDAllowedAudience: "{{ .Values.openid.allowedAudience }}"
+  PULSAR_PREFIX_openIDRoleClaim: "{{ .Values.openid.roleClaim }}"
+
+  PULSAR_PREFIX_openIDAcceptedTimeLeewaySeconds: "{{ .Values.openid.acceptedTimeLeewaySeconds }}"
+  PULSAR_PREFIX_openIDJwkCacheSize: "{{ .Values.openid.jwk.cacheSize }}"
+  PULSAR_PREFIX_openIDJwkExpiresSeconds: "{{ .Values.openid.jwk.expiresSeconds }}"
+  PULSAR_PREFIX_openIDJwkConnectionTimeoutMillis: "{{ .Values.openid.jwk.connectionTimeoutMillis }}"
+  PULSAR_PREFIX_openIDJwkReadTimeoutMillis: "{{ .Values.openid.jwk.readTimeoutMillis }}"
+  PULSAR_PREFIX_openIDMetadataCacheSize: "{{ .Values.openid.metadata.cacheSize }}"
+  PULSAR_PREFIX_openIDMetadataExpiresSeconds: "{{ .Values.openid.metadata.expiresSeconds }}"
+  PULSAR_PREFIX_openIDMetadataConnectionTimeoutMillis: "{{ .Values.openid.metadata.connectionTimeoutMillis }}"
+  PULSAR_PREFIX_openIDMetadataReadTimeoutMillis: "{{ .Values.openid.metadata.readTimeoutMillis }}"
+  PULSAR_PREFIX_openIDRequireHttps: "{{ .Values.openid.requireHttps }}"
+  # Set following to true if admin console is configured to use Okta integration. The admin console uses the user model with local admin token, not Okta integration.
+  PULSAR_PREFIX_openIDAttemptAuthenticationProviderToken: "{{ .Values.openid.attemptAuthenticationProviderToken }}"
+  {{- if .Values.openid.withS4k }}
+  PULSAR_PREFIX_saslAllowedMechanisms: "OAUTHBEARER,PLAIN"
+  {{- end }}
+{{- end }}
+{{- if .Values.enableTls }}
+  webServicePortTls: "{{ .Values.proxy.wsProxyPortTls }}"
+  tlsEnabled: "true"
+  tlsCertificateFilePath: /pulsar/certs/tls.crt
+  tlsKeyFilePath: /pulsar/tls-pk8.key
+  tlsEnabledWithKeyStore: "true"
+  tlsKeyStore: "/pulsar/tls.keystore.jks"
+  tlsTrustStore: "/pulsar/tls.truststore.jks"
+  # .Values.tls.websocket.enabled is deprecated
+  {{- if or (or .Values.tls.websocket.enabled .Values.enableTls) (and .Values.enableTls .Values.tls.websocket.enableTlsWithBroker) }}
+  brokerClientTlsEnabled: "true"
+  {{- if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}
+  tlsTrustCertsFilePath: /pulsar/certs/ca.crt
+  brokerClientTrustCertsFilePath: /pulsar/certs/ca.crt
+  {{- else }}
+  tlsTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+  brokerClientTrustCertsFilePath: "{{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}"
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- range $key, $val := $.Values.proxy.configData }}
+  {{ $key }}: {{ $val | replace "\"" "" | trim | quote }}
+{{- end }}
+{{- end }}
