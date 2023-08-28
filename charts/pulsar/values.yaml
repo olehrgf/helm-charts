@@ -697,6 +697,10 @@ zookeeperMetadata:
   component: zookeeper-metadata
   ## timeout (in seconds) for running "bin/pulsar initialize-cluster-metadata" command
   initTimeout: 60
+  labels: {}
+  annotations: {}
+#    argocd.argoproj.io/hook: PostSync
+#    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""
@@ -966,6 +970,10 @@ broker:
 ## Job will start as soon as one broker pod is available.
 brokerTransactionsMetadata:
   component: broker-transactions-metadata
+  labels: {}
+  annotations: {}
+#    argocd.argoproj.io/hook: PostSync
+#    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""

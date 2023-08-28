@@ -28,6 +28,13 @@ metadata:
     heritage: {{ .Release.Service }}
     component: {{ .Values.zookeeperMetadata.component }}
     cluster: {{ template "pulsar.fullname" . }}
+    {{- if .Values.zookeeperMetadata.labels }}
+      {{- toYaml .Values.zookeeperMetadata.labels | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.zookeeperMetadata.annotations }}
+      {{- toYaml .Values.zookeeperMetadata.annotations | nindent 4 }}
+    {{- end }}
 spec:
   template:
     metadata:
