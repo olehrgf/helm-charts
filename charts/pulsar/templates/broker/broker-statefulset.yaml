@@ -15,7 +15,7 @@
 #
 #
 
-{{- if .Values.extra.brokerSts }}
+{{- if .Values.extra.broker }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -189,8 +189,8 @@ spec:
         # This init container will wait for bookkeeper to be ready before
         # deploying the broker
         - name: wait-bookkeeper-ready
-          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+          imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
           command: ["sh", "-c"]
           args:
             - >-
@@ -224,8 +224,8 @@ spec:
       {{- end }}
       containers:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
-          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+          imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
           {{- if .Values.broker.probe.enabled }}
           readinessProbe:
             exec:

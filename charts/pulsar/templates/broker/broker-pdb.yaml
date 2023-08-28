@@ -15,7 +15,7 @@
 #
 #
 
-{{- if .Values.extra.brokerSts }}
+{{- if .Values.extra.broker }}
 {{- if .Values.broker.pdb.usePolicy }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
