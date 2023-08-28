@@ -699,6 +699,8 @@ zookeeperMetadata:
   initTimeout: 60
   labels: {}
   annotations: {}
+#    argocd.argoproj.io/hook: PostSync
+#    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""
@@ -970,6 +972,8 @@ brokerTransactionsMetadata:
   component: broker-transactions-metadata
   labels: {}
   annotations: {}
+#    argocd.argoproj.io/hook: PostSync
+#    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""
