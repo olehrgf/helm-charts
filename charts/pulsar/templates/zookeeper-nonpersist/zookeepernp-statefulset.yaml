@@ -37,7 +37,7 @@ spec:
       release: {{ .Release.Name }}
       component: {{ .Values.zookeepernp.component }}
   updateStrategy:
-    {{ toYaml .Values.zookeepernp.updateStrategy | indent 4 }}
+    {{- toYaml .Values.zookeepernp.updateStrategy | nindent 4 }}
   podManagementPolicy: {{ .Values.zookeepernp.podManagementPolicy }}
   template:
     metadata:
@@ -47,42 +47,42 @@ spec:
         component: {{ .Values.zookeepernp.component }}
         cluster: {{ template "pulsar.fullname" . }}
         {{- if .Values.zookeepernp.podLabels }}
-          {{ toYaml .Values.zookeepernp.podLabels | indent 8 }}
+          {{- toYaml .Values.zookeepernp.podLabels | nindent 8 }}
         {{- end }}
       annotations:
       {{- if .Values.restartOnConfigMapChange.enabled }}
         checksum/config: {{ include (print $.Template.BasePath "/zookeeper-nonpersist/zookeeper-configmap.yaml") . | sha256sum }}
       {{- end }}
       {{- if .Values.zookeepernp.podAnnotations }}
-        {{ toYaml .Values.zookeepernp.podAnnotations | indent 8 }}
+        {{- toYaml .Values.zookeepernp.podAnnotations | nindent 8 }}
       {{- end }}
     spec:
       dnsConfig:
-        {{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.priorityClass.enabled }}
       priorityClassName: pulsar-priority
       {{- end }}
       {{- if and (.Values.nodeSelector) (not .Values.zookeepernp.nodeSelector) }}
       nodeSelector:
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zookeepernp.nodeSelector }}
       nodeSelector:
-      {{ toYaml .Values.zookeepernp.nodeSelector | indent 8 }}
+      {{- toYaml .Values.zookeepernp.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zookeepernp.tolerations }}
       tolerations:
-        {{ toYaml .Values.zookeepernp.tolerations | indent 8 }}
+        {{- toYaml .Values.zookeepernp.tolerations | nindent 8 }}
       {{- end }}
       affinity:
         {{- if .Values.zookeepernp.nodeAffinity }}
         nodeAffinity:
-          {{ toYaml .Values.zookeepernp.nodeAffinity | indent 10 }}
+          {{- toYaml .Values.zookeepernp.nodeAffinity | nindent 12 }}
         {{- end }}
         {{- if .Values.enableAntiAffinity }}
         podAntiAffinity:
         {{- if .Values.zookeepernp.podAntiAffinity }}
-          {{ toYaml .Values.zookeepernp.podAntiAffinity | indent 10 }}
+          {{- toYaml .Values.zookeepernp.podAntiAffinity | nindent 12 }}
         {{- else }}
           {{- if .Values.antiAffinity.host.enabled }}
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -131,7 +131,7 @@ spec:
           imagePullPolicy: {{ .Values.image.zookeeper.pullPolicy }}
           {{- if .Values.zookeepernp.resources }}
           resources:
-            {{ toYaml .Values.zookeepernp.resources | indent 10 }}
+            {{- toYaml .Values.zookeepernp.resources | nindent 12 }}
           {{- end }}
           command: ["sh", "-c"]
           args:

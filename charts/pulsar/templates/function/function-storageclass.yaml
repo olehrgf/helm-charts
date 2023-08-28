@@ -45,7 +45,7 @@ parameters:
   fsType: {{ .Values.function.volumes.data.storageClass.fsType }}
   {{- end }}
   {{- if .Values.function.volumes.data.storageClass.extraParams }}
-{{ toYaml .Values.function.volumes.data.storageClass.extraParams | indent 2 }}
+    {{- toYaml .Values.function.volumes.data.storageClass.extraParams | nindent 2 }}
   {{- end }}
 {{- else if .Values.default_storage }}
 reclaimPolicy: {{ .Values.default_storage.reclaimPolicy }}
@@ -58,7 +58,7 @@ parameters:
   fsType: {{ .Values.default_storage.fsType }}
   {{- end }}
   {{- if .Values.default_storage.extraParams }}
-{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+    {{- toYaml .Values.default_storage.extraParams | nindent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}

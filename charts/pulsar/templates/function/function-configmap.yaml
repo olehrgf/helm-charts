@@ -83,8 +83,8 @@ data:
     tlsKeyStore: "/pulsar/tls.keystore.jks"
     tlsTrustStore: "/pulsar/tls.truststore.jks"
     tlsEnableHostnameVerification: "{{ .Values.tls.function.enableHostnameVerification }}"
-    pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
-    pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+    pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+    pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
     {{- else }}
     pulsarServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
     pulsarWebServiceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
@@ -146,7 +146,7 @@ data:
       openIDAttemptAuthenticationProviderToken: "{{ .Values.openid.attemptAuthenticationProviderToken }}"
       {{- end }}
       {{- if .Values.function.customProperties }}
-{{ toYaml .Values.function.customProperties | indent 6 }}
+        {{- toYaml .Values.function.customProperties | nindent 6 }}
       {{- end }}
     clientAuthenticationPlugin: "org.apache.pulsar.client.impl.auth.AuthenticationToken"
     clientAuthenticationParameters: "file:///pulsar/token-superuser/superuser.jwt"
@@ -156,7 +156,7 @@ data:
     {{- end }}
     {{- end }}
     {{- if .Values.function.customConfiguration }}
-{{ toYaml .Values.function.customConfiguration | indent 4 }}
+      {{- toYaml .Values.function.customConfiguration | nindent 4 }}
     {{- end }}
     connectorsDirectory: "./connectors"
     {{- if eq .Values.function.runtime "process" }}
@@ -188,7 +188,7 @@ data:
       {{- if and .Values.enableTls .Values.tls.function.enableTlsWithBroker }}
       # setting the pulsar service url that pulsar function should use to connect to pulsar
       # if it is not set, it will use the pulsar service url configured in worker service
-      pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651/"
+      pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651/"
       {{- else }}
       pulsarServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650/"
       {{- end }}

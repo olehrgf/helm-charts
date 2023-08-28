@@ -42,7 +42,7 @@ spec:
         component: worker
     spec:
       dnsConfig:
-{{ toYaml .Values.dnsConfig | indent 8 }}
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
       {{- if .Values.pulsarSQL.image.securityContext.enabled }}
       securityContext:
         runAsUser: {{ .Values.pulsarSQL.image.securityContext.runAsUser }}
@@ -85,10 +85,10 @@ spec:
           {{- if .Values.storageOffload.driver }}
           {{- if eq .Values.storageOffload.driver "aws-s3" }}
           env:
-          - name: AWS_ACCESS_KEY_ID
-            value: {{ .Values.storageOffload.accessKey }}
-          - name: AWS_SECRET_ACCESS_KEY
-            value: {{ .Values.storageOffload.accessSecret }}
+            - name: AWS_ACCESS_KEY_ID
+              value: {{ .Values.storageOffload.accessKey }}
+            - name: AWS_SECRET_ACCESS_KEY
+              value: {{ .Values.storageOffload.accessSecret }}
           {{- end }}
           {{- end }}
           volumeMounts:
@@ -164,19 +164,19 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
-{{ toYaml .Values.pulsarSQL.resources | indent 12 }}
-    {{- with .Values.pulsarSQL.nodeSelector }}
+            {{- toYaml .Values.pulsarSQL.resources | nindent 12 }}
+      {{- with .Values.pulsarSQL.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.pulsarSQL.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarSQL.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.pulsarSQL.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pulsarSQL.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
 {{- end }}
 {{- end }}

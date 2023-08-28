@@ -29,14 +29,14 @@ metadata:
     component: {{ .Values.pulsarAdminConsole.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
-{{ toYaml .Values.pulsarAdminConsole.service.annotations | indent 4 }}
+    {{- toYaml .Values.pulsarAdminConsole.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.pulsarAdminConsole.service.type }}
   {{- if .Values.pulsarAdminConsole.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.pulsarAdminConsole.service.loadBalancerIP }}
   {{- end }}
   ports:
-{{ toYaml .Values.pulsarAdminConsole.service.ports | indent 2 }}
+    {{- toYaml .Values.pulsarAdminConsole.service.ports | nindent 2 }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}

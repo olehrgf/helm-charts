@@ -64,12 +64,12 @@ data:
     {{- if .Values.enableTls }}
     # pulsar.broker-service-url=https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080
-    pulsar.tls-allow-insecure-connection = false
-    pulsar.tls-hostname-verification-enable = false
+    pulsar.tls-allow-insecure-connection=false
+    pulsar.tls-hostname-verification-enable=false
     {{- if or .Values.secrets .Values.createCertificates.selfSigned.enabled .Values.createCertificates.selfSignedPerComponent.enabled }}
-    pulsar.tls-trust-cert-file-path = /pulsar/certs/ca.crt
+    pulsar.tls-trust-cert-file-path=/pulsar/certs/ca.crt
     {{- else }}
-    pulsar.tls-trust-cert-file-path = {{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}
+    pulsar.tls-trust-cert-file-path={{ .Values.tlsCaPath }}/{{ .Values.tlsCaCert }}
     {{- end }}
     {{- else }}
     pulsar.broker-service-url=http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080
@@ -91,9 +91,9 @@ data:
     {{- end }}
     # pulsar.managed-ledger-cache-size-MB = {{ .Values.pulsarSQL.catalog.pulsar.managedLedgerCacheSizeMB }}
     {{- if .Values.storageOffload.driver }}
-    pulsar.offloaders-directory = /pulsar/offloaders
-    pulsar.managed-ledger-offload-max-threads = 2
-    pulsar.managed-ledger-offload-driver =  {{ .Values.storageOffload.driver }}
+    pulsar.offloaders-directory=/pulsar/offloaders
+    pulsar.managed-ledger-offload-max-threads=2
+    pulsar.managed-ledger-offload-driver={{ .Values.storageOffload.driver }}
     {{- if eq .Values.storageOffload.driver "aws-s3" }}
     pulsar.offloader-properties = \
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
@@ -102,7 +102,7 @@ data:
       "AWS_SECRET_ACCESS_KEY": "{{ .Values.storageOffload.accessSecret }}" }
     {{- end }}
     {{- if eq .Values.storageOffload.driver "s3" }}
-    pulsar.offloader-properties = \
+    pulsar.offloader-properties=\
       { "s3ManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
       "s3ManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "AWS_ACCESS_KEY_ID": "{{ .Values.storageOffload.accessKey }}", \
@@ -110,7 +110,7 @@ data:
       "s3ManagedLedgerOffloadServiceEndpoint": "{{ .Values.storageOffload.serviceEndpoint }}" }
     {{- end }}
     {{- if eq .Values.storageOffload.driver "google-cloud-storage" }}
-    pulsar.offloader-properties = \
+    pulsar.offloader-properties=\
       { "gcsManagedLedgerOffloadBucket": "{{ .Values.storageOffload.bucket }}", \
       "gcsManagedLedgerOffloadRegion": "{{ .Values.storageOffload.region }}", \
       "gcsManagedLedgerOffloadServiceAccountKeyFile": "/pulsar/gcp-service-account/{{ .Values.storageOffload.gcsServiceAccountJsonFile }}" }

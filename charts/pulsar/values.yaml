@@ -348,7 +348,7 @@ restartOnConfigMapChange:
 ## which extra components
 extra:
   # Broker as stateful set
-  brokerSts: true
+  broker: true
   # Pulsar proxy
   proxy: true
   # Websocket proxy
@@ -398,7 +398,7 @@ extra:
 # This section allows for targeted upgrades of each component.
 #
 image:
-  brokerSts:
+  broker:
     # If not using tiered storage, you can use the smaller pulsar image for the broker
     repository: apachepulsar/pulsar-all
     pullPolicy: IfNotPresent
@@ -544,7 +544,8 @@ zookeeper:
   #         operator: In
   #         values:
   #         - region1
-  annotations:
+  podLabels: {}
+  podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
   tolerations: []
@@ -845,14 +846,8 @@ broker:
   #   defaultEnsembleSize: 2
   #   defaultAckQuorum: 2
   #   defaultWriteQuorum: 2
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   # nodeSelector:
   #   cloud.google.com/gke-nodepool: default-pool
-  #
   # nodeAffinity:
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #     nodeSelectorTerms:
@@ -870,24 +865,19 @@ broker:
   #         values:
   #         - bookkeeper
   #     topologyKey: "kubernetes.io/hostname"
-  annotations:
+  podLabels: {}
+  podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
   tolerations: []
   gracePeriod: 60
   # Enable extra services in the broker
   # These can also be enabled as standalone services
-  # See extra section above
+  # See extras section above
   functionsWorkerEnabled: false
   webSocketServiceEnabled: false
-  # Enable Transactions on the Pulsar cluster.
-  # It starts the transaction coordinator module inside the broker.
-  # It runs the Transaction coordinator metadata setup job.
   transactionCoordinator:
     enabled: false
-    # set to true to manually initialize transaction coordinator on existing cluster
-    initialize: false
-    # Count of partitions used for the transaction coordinator.
     initialCount: 16
   probe:
     enabled: true
@@ -968,133 +958,14 @@ broker:
     usePolicy: true
     maxUnavailable: 1
 
-## Pulsar: Broker cluster
-## templates/broker-deployment.yaml
-##
-brokerSts:
-  component: brokersts
-  replicaCount: 3
-  # ledger:
-  #   defaultEnsembleSize: 2
-  #   defaultAckQuorum: 2
-  #   defaultWriteQuorum: 2
-  # nodeSelector:
-  #   cloud.google.com/gke-nodepool: default-pool
-  # nodeAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: nodepool
-  #         operator: In
-  #         values:
-  #         - pulsar
-  # podAntiAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #   - labelSelector:
-  #       matchExpressions:
-  #       - key: "component"
-  #         operator: In
-  #         values:
-  #         - bookkeeper
-  #     topologyKey: "kubernetes.io/hostname"
-  podLabels: {}
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8080"
-  tolerations: []
-  gracePeriod: 60
-  # Enable extra services in the broker
-  # These can also be enabled as standalone services
-  # See extras section above
-  functionsWorkerEnabled: false
-  webSocketServiceEnabled: false
-  transactionCoordinator:
-    enabled: false
-    initialCount: 16
-  probe:
-    enabled: true
-    port: 8080
-    initial: 10
-    period: 30
-    timeout: 5
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1
-    # limits:
-    #   memory: 2Gi
-    #   cpu: 1
-  # Init container to add files to image
-  initContainer: {}
-  # initContainer:
-  #   repository: repository/image
-  #   tag: latest
-  #   pullPolicy: IfNotPresent
-  #   command: ["cp", "-r", "/pulsar-libs", "/jars" ]
-  #   args: []
-  #   emptyDirPath: "/jars"
-  #   env:
-  #   - name:
-  #     value:
-  #   envFrom:
-  #   - configMapRef:
-  #     name:
-
-  # Comma delimited list of authentication providers
-  authenticationProviders: "org.apache.pulsar.broker.authentication.AuthenticationProviderToken"
-  # extraAuthProvider: this is now a deprecated field, use the `.Values.brokerSts.authenticationProviders` field instead
-
-  ## Broker configmap
-  ## templates/broker-configmap.yaml
-  ##
-  configData:
-    PULSAR_MEM: "-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2g -Dio.netty.leakDetectionLevel=disabled -Dio.netty.recycler.linkCapacity=1024 -XX:+ExitOnOutOfMemoryError"
-    PULSAR_GC: "-XX:+UseG1GC"
-    PULSAR_LOG_LEVEL: "info"
-    PULSAR_LOG_ROOT_LEVEL: "info"
-    PULSAR_EXTRA_OPTS: "-Dpulsar.log.root.level=info"
-    brokerDeduplicationEnabled: "false"
-    exposeTopicLevelMetricsInPrometheus: "true"
-    exposeConsumerLevelMetricsInPrometheus: "false"
-    backlogQuotaDefaultRetentionPolicy: "producer_exception"
-
-  ## Broker service
-  ## templates/broker-service.yaml
-  ##
-  # If you are enabling TLS, make sure these ports are on the port list:
-  #   - name: https
-  #     port: 8443
-  #     protocol: TCP
-  #   - name: pulsarssl
-  #     port: 6651
-  # To only allow TLS connections, remove the plain-text ports (http, pulsar)
-  service:
-    annotations: {}
-    type: ClusterIP
-    headless: false
-    ports:
-    - name: http
-      port: 8080
-    - name: pulsar
-      port: 6650
-    - name: https
-      port: 8443
-    - name: pulsarssl
-      port: 6651
-  ingress:
-    enabled: false
-  ## Broker PodDisruptionBudget
-  ## templates/broker-pdb.yaml
-  ##
-  pdb:
-    usePolicy: true
-    maxUnavailable: 1
-
 ## Pulsar Transactions metadata setup.
 ## This is the job responsible to prepare the cluster for enabling transactions.
 ## Job will start as soon as one broker pod is available.
 brokerTransactionsMetadata:
   component: broker-transactions-metadata
+  extraInitCommand: ""
+## When istio is enabled job must exit correctly
+#  extraInitCommand: "x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x"
 
 function:
   component: function
@@ -1313,7 +1184,7 @@ proxy:
   zookeeperClientEnabled: true
   # when false, broker address will be looked up in zookeeper
   disableZookeeperDiscovery: true
-  # use "brokersts" instead of "broker" to identify the broker k8s component
+  # use "broker" instead of "broker" to identify the broker k8s component
   useStsBrokersForDiscovery: false
   updateStrategy:
     type: RollingUpdate
@@ -1322,7 +1193,8 @@ proxy:
       maxUnavailable: 0
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
-  annotations:
+  podLabels: {}
+  podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8080"
   tolerations: []

@@ -31,10 +31,10 @@ metadata:
 data:
   {{- if .Values.proxy.disableZookeeperDiscovery }}
   {{- if .Values.proxy.useStsBrokersForDiscovery }}
-  brokerServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
-  brokerServiceUrlTls: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
-  serviceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
-  serviceUrlTls: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+  brokerServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
+  brokerServiceUrlTls: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+  serviceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
+  serviceUrlTls: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
   {{- else }}
   brokerServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
   brokerServiceUrlTls: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
@@ -45,15 +45,15 @@ data:
   {{- if .Values.proxy.zookeeperClientEnabled }}
   zookeeperServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
+      "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
     {{- else }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
+      "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
     {{- end }}
   configurationStoreServers:
     {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
+      "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2281"
     {{- else }}
-    "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
+      "{{ template "pulsar.fullname" . }}-{{ .Values.zookeeper.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:2181"
     {{- end }}
   {{- end }}
   clusterName: {{ template "pulsar.fullname" . }}

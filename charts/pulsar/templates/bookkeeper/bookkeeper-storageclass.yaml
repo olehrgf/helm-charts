@@ -44,7 +44,7 @@ parameters:
   fsType: {{ .Values.bookkeeper.volumes.journal.storageClass.fsType }}
   {{- end }}
   {{- if .Values.bookkeeper.volumes.journal.storageClass.extraParams }}
-{{ toYaml .Values.bookkeeper.volumes.journal.storageClass.extraParams | indent 2 }}
+    {{ toYaml .Values.bookkeeper.volumes.journal.storageClass.extraParams | indent 2 }}
   {{- end }}
 {{- else if .Values.default_storage }}
 reclaimPolicy: {{ .Values.default_storage.reclaimPolicy }}
@@ -57,7 +57,7 @@ parameters:
   fsType: {{ .Values.default_storage.fsType }}
   {{- end }}
   {{- if .Values.default_storage.extraParams }}
-{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+    {{- toYaml .Values.default_storage.extraParams | nindent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}
@@ -93,7 +93,7 @@ parameters:
   fsType: {{ .Values.bookkeeper.volumes.ledgers.storageClass.fsType }}
   {{- end }}
   {{- if .Values.bookkeeper.volumes.ledgers.storageClass.extraParams }}
-{{ toYaml .Values.bookkeeper.volumes.ledgers.storageClass.extraParams | indent 2 }}
+    {{- toYaml .Values.bookkeeper.volumes.ledgers.storageClass.extraParams | nindent 2 }}
   {{- end }}
 {{- else if .Values.default_storage }}
 reclaimPolicy: {{ .Values.default_storage.reclaimPolicy }}
@@ -106,7 +106,7 @@ parameters:
   fsType: {{ .Values.default_storage.fsType }}
   {{- end }}
   {{- if .Values.default_storage.extraParams }}
-{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+    {{- toYaml .Values.default_storage.extraParams | nindent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}
@@ -144,7 +144,7 @@ parameters:
   fsType: {{ .Values.bookkeeper.volumes.ranges.storageClass.fsType }}
   {{- end }}
   {{- if .Values.bookkeeper.volumes.ranges.storageClass.extraParams }}
-{{ toYaml .Values.bookkeeper.volumes.ranges.storageClass.extraParams | indent 2 }}
+{{- toYaml .Values.bookkeeper.volumes.ranges.storageClass.extraParams | nindent 2 }}
   {{- end }}
 {{- else if .Values.default_storage }}
 reclaimPolicy: {{ .Values.default_storage.reclaimPolicy }}
@@ -157,7 +157,7 @@ parameters:
   fsType: {{ .Values.default_storage.fsType }}
   {{- end }}
   {{- if .Values.default_storage.extraParams }}
-{{ toYaml .Values.default_storage.extraParams | indent 2 }}
+{{- toYaml .Values.default_storage.extraParams | nindent 2 }}
   {{- end }}
 {{- end }}
 {{- end }}

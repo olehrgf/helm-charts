@@ -43,11 +43,11 @@ spec:
         component: {{ .Values.zoonavigator.component }}
         cluster: {{ template "pulsar.fullname" . }}
         {{- if .Values.zoonavigator.podLabels }}
-          {{ toYaml .Values.zoonavigator.podLabels | indent 8 }}
+          {{- toYaml .Values.zoonavigator.podLabels | nindent 8 }}
         {{- end }}
       annotations:
         {{- if .Values.zoonavigator.podAnnotations }}
-          {{ toYaml .Values.zoonavigator.podAnnotations | indent 8 }}
+          {{- toYaml .Values.zoonavigator.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.priorityClass.enabled }}
@@ -56,29 +56,29 @@ spec:
       {{- if .Values.zoonavigator.nodeAffinity }}
       affinity:
         nodeAffinity:
-          {{ toYaml .Values.zoonavigator.nodeAffinity | indent 10 }}
+          {{- toYaml .Values.zoonavigator.nodeAffinity | nindent 12 }}
       {{- end }}
       {{- if and (.Values.nodeSelector) (not .Values.zoonavigator.nodeSelector) }}
       nodeSelector:
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zoonavigator.nodeSelector }}
       nodeSelector:
-        {{ toYaml .Values.zoonavigator.nodeSelector | indent 8 }}
+        {{- toYaml .Values.zoonavigator.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.zoonavigator.tolerations }}
       tolerations:
-        {{ toYaml .Values.zoonavigator.tolerations | indent 8 }}
+        {{- toYaml .Values.zoonavigator.tolerations | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.zoonavigator.gracePeriod }}
       containers:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zoonavigator.component }}-web"
           image: "{{ .Values.zoonavigator.image.repository.web }}:{{ .Values.zoonavigator.image.tag }}"
           imagePullPolicy: {{ .Values.zoonavigator.image.pullPolicy }}
-      {{- if .Values.zoonavigator.resources }}
+          {{- if .Values.zoonavigator.resources }}
           resources:
-{{ toYaml .Values.zoonavigator.resources | indent 10 }}
-      {{- end }}
+            {{- toYaml .Values.zoonavigator.resources | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 8001
@@ -89,21 +89,21 @@ spec:
               value: "9001"
             - name: WEB_HTTP_PORT
               value: "8001"
-        {{- if .Values.zoonavigator.autoConnect }}
+            {{- if .Values.zoonavigator.autoConnect }}
             # Will set Zoonavigator to autoconnect to Zookeepers
             - name: AUTO_CONNECT_CONNECTION_STRING
-          {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
+            {{- if and .Values.enableTls .Values.tls.zookeeper.enabled }}
               value: {{ include "pulsar.zkConnectStringTls" . }}
-          {{- else }}
+            {{- else }}
               value: {{ include "pulsar.zkConnectString" . }}
-          {{- end }}
-        {{- end }}
+            {{- end }}
+            {{- end }}
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.zoonavigator.component }}-api"
           image: "{{ .Values.zoonavigator.image.repository.api }}:{{ .Values.zoonavigator.image.tag }}"
           imagePullPolicy: {{ .Values.zoonavigator.image.pullPolicy }}
           {{- if .Values.zoonavigator.resources }}
           resources:
-            {{ toYaml .Values.zoonavigator.resources | indent 10 }}
+            {{- toYaml .Values.zoonavigator.resources | nindent 12 }}
           {{- end }}
           ports:
             - name: api

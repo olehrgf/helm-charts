@@ -30,11 +30,11 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
     {{- if .Values.function.service.annotations }}
-      {{ toYaml .Values.function.service.annotations | indent 4 }}
+      {{- toYaml .Values.function.service.annotations | nindent 4 }}
     {{- end }}
 spec:
   ports:
-    {{ toYaml .Values.function.service.ports | indent 2 }}
+    {{- toYaml .Values.function.service.ports | nindent 2 }}
   {{- if .Values.function.service.headless }}
   clusterIP: None
   {{- end }}
@@ -59,11 +59,11 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
     {{- if .Values.function.service.annotations }}
-      {{ toYaml .Values.function.service.annotations | indent 4 }}
+      {{- toYaml .Values.function.service.annotations | nindent 4 }}
     {{- end }}
 spec:
   ports:
-    {{ toYaml .Values.function.service.ports | indent 2 }}
+    {{- toYaml .Values.function.service.ports | nindent 2 }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
