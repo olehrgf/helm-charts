@@ -31,6 +31,15 @@ metadata:
     cluster: {{ template "pulsar.fullname" . }}
 spec:
   template:
+    metadata:
+      labels:
+        {{- if .Values.brokerTransactionsMetadata.podLabels }}
+          {{- toYaml .Values.brokerTransactionsMetadata.podLabels | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.brokerTransactionsMetadata.podAnnotations }}
+          {{- toYaml .Values.brokerTransactionsMetadata.podAnnotations | nindent 8 }}
+        {{- end }}
     spec:
       dnsConfig:
         {{- toYaml .Values.dnsConfig | nindent 8 }}
