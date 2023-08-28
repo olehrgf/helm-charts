@@ -113,6 +113,26 @@ entries:
   pulsar:
   - apiVersion: v2
     appVersion: 3.1.0
+    created: "2023-08-28T07:21:09.143718723Z"
+    dependencies:
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 44.x.x
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.8.x
+    description: Apache Pulsar Helm chart for Kubernetes (Fork from https://github.com/datastax/pulsar-helm-chart)
+    digest: ae810e05317c054ffc1044b8a080dc94d2c4451873edc4cd2cc2b7813472f50e
+    maintainers:
+    - name: olehrgf
+    name: pulsar
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/pulsar-0.0.2/pulsar-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 3.1.0
     created: "2023-08-25T11:48:00.804738287Z"
     dependencies:
     - condition: kube-prometheus-stack.enabled
@@ -201,4 +221,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-08-25T11:48:00.804778288Z"
+generated: "2023-08-28T07:21:09.143751423Z"
