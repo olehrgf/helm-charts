@@ -20,7 +20,7 @@ description: Apache Pulsar Helm chart for Kubernetes (Fork from https://github.c
 name: pulsar
 maintainers:
   - name: olehrgf
-version: 0.0.4
+version: 0.0.5
 dependencies:
 - name: kube-prometheus-stack
   version: 44.x.x

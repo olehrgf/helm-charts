@@ -29,6 +29,13 @@ metadata:
     heritage: {{ .Release.Service }}
     component: {{ .Values.brokerTransactionsMetadata.component }}
     cluster: {{ template "pulsar.fullname" . }}
+    {{- if .Values.brokerTransactionsMetadata.labels }}
+      {{- toYaml .Values.brokerTransactionsMetadata.labels | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.brokerTransactionsMetadata.annotations }}
+      {{- toYaml .Values.brokerTransactionsMetadata.annotations | nindent 4 }}
+    {{- end }}
 spec:
   template:
     metadata:

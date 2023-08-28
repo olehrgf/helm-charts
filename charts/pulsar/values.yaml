@@ -697,6 +697,8 @@ zookeeperMetadata:
   component: zookeeper-metadata
   ## timeout (in seconds) for running "bin/pulsar initialize-cluster-metadata" command
   initTimeout: 60
+  labels: {}
+  annotations: {}
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""
@@ -966,6 +968,8 @@ broker:
 ## Job will start as soon as one broker pod is available.
 brokerTransactionsMetadata:
   component: broker-transactions-metadata
+  labels: {}
+  annotations: {}
   podLabels: {}
   podAnnotations: {}
   extraInitCommand: ""
