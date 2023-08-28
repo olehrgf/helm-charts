@@ -83,8 +83,8 @@ data:
     tlsKeyStore: "/pulsar/tls.keystore.jks"
     tlsTrustStore: "/pulsar/tls.truststore.jks"
     tlsEnableHostnameVerification: "{{ .Values.tls.function.enableHostnameVerification }}"
-    pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
-    pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
+    pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651"
+    pulsarWebServiceUrl: "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443"
     {{- else }}
     pulsarServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650"
     pulsarWebServiceUrl: "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080"
@@ -188,7 +188,7 @@ data:
       {{- if and .Values.enableTls .Values.tls.function.enableTlsWithBroker }}
       # setting the pulsar service url that pulsar function should use to connect to pulsar
       # if it is not set, it will use the pulsar service url configured in worker service
-      pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651/"
+      pulsarServiceUrl: "pulsar+ssl://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6651/"
       {{- else }}
       pulsarServiceUrl: "pulsar://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:6650/"
       {{- end }}

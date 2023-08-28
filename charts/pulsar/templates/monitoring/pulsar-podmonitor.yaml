@@ -45,7 +45,7 @@ spec:
           - {{.Values.broker.component}}
           {{- end }}
           {{- if .Values.extra.brokerSts }}
-          - {{.Values.brokerSts.component}}
+          - {{.Values.broker.component}}
           {{- end }}
           {{- if .Values.extra.proxy }}
           - {{.Values.proxy.component}}

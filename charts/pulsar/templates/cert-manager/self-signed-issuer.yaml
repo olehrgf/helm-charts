@@ -61,12 +61,12 @@ spec:
   # The wildcard names are needed to connect directly to the broker pods and will only work when the broker is deployed
   # as a StatefulSet.
   dnsNames:
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
     - "{{ template "pulsar.fullname" . }}-proxy.{{ template "pulsar.serviceDnsSuffix" . }}"
     - "{{ template "pulsar.fullname" . }}-proxy.{{ .Release.Namespace }}"
     - "{{ template "pulsar.fullname" . }}-proxy"

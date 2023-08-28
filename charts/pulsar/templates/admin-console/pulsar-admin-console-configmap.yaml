@@ -53,8 +53,8 @@ data:
           {{- end }}
           {{- else }}
           {{- if .Values.enableTls }}
-        "pulsar_url": "https://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443",
-        "websocket_url": "wss://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8964",
+        "pulsar_url": "https://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8443",
+        "websocket_url": "wss://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8964",
           {{- if .Values.extra.function }}
         "function_worker_url": "https://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:6751",
           {{- end }}
@@ -63,8 +63,8 @@ data:
         "pulsar_url": "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080",
         "websocket_url": "ws://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8964",
           {{- else }}
-        "pulsar_url": "http://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080",
-        "websocket_url": "ws://{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8964",
+        "pulsar_url": "http://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8080",
+        "websocket_url": "ws://{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}:8964",
           {{- end }}
           {{- if .Values.extra.function }}
         "function_worker_url": "http://{{ template "pulsar.fullname" . }}-{{ .Values.function.component }}-ca.{{ template "pulsar.serviceDnsSuffix" . }}:6750",

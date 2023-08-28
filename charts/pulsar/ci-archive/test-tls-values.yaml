@@ -120,7 +120,7 @@ secrets:
 
 image:
   broker:
-    repository: datastax/pulsar
+    repository: apache/pulsar
 
 zookeeper:
   replicaCount: 1

@@ -59,7 +59,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}-tls"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}-tls"
   namespace: {{ .Release.Namespace }}
 spec:
   {{- if .Values.tls.broker.certSpec.privateKey }}
@@ -70,12 +70,12 @@ spec:
   # The wildcard names are needed to connect directly to the broker.
   # The non-wildcard broker names are needed when calling the topic lookup service.
   dnsNames:
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}.{{ .Release.Namespace }}"
-    - "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}"
+    - "*.{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ template "pulsar.serviceDnsSuffix" . }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}.{{ .Release.Namespace }}"
+    - "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
   issuerRef:
     name: "{{ template "pulsar.fullname" . }}-ca-issuer"
 {{- end }}

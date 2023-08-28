@@ -19,31 +19,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerSts.component }}"
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "pulsar.name" . }}
     chart: {{ template "pulsar.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    component: {{ .Values.brokerSts.component }}
+    component: {{ .Values.broker.component }}
     cluster: {{ template "pulsar.fullname" . }}
   annotations:
-    {{- if .Values.brokerSts.service.annotations }}
-      {{- toYaml .Values.brokerSts.service.annotations | nindent 4 }}
+    {{- if .Values.broker.service.annotations }}
+      {{- toYaml .Values.broker.service.annotations | nindent 4 }}
     {{- end }}
     {{- if .Values.extra.dnsOnBroker }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.dnsName }}
     {{- end }}
 spec:
   ports:
-    {{- toYaml .Values.brokerSts.service.ports | nindent 2 }}
-  {{- if .Values.brokerSts.service.headless }}
+    {{- toYaml .Values.broker.service.ports | nindent 2 }}
+  {{- if .Values.broker.service.headless }}
   clusterIP: None
   {{- end }}
-  type: {{ .Values.brokerSts.service.type }}
+  type: {{ .Values.broker.service.type }}
   selector:
     app: {{ template "pulsar.name" . }}
     release: {{ .Release.Name }}
-    component: {{ .Values.brokerSts.component }}
+    component: {{ .Values.broker.component }}
 {{- end -}}
