@@ -15,7 +15,7 @@
 #
 #
 
-{{- if .Values.extra.brokerSts }}
+{{- if .Values.extra.broker }}
 {{- if and .Values.broker.transactionCoordinator.enabled (or .Release.IsInstall .Values.initialize .Values.broker.transactionCoordinator.initialize) }}
 apiVersion: batch/v1
 kind: Job
@@ -63,8 +63,8 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-broker-ready
-          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+          imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
           {{- if .Values.enableTls }}
           volumeMounts:
             - name: certs
@@ -89,8 +89,8 @@ spec:
               done;
       containers:
         - name: "{{ template "pulsar.fullname" . }}-{{ .Values.brokerTransactionsMetadata.component }}"
-          image: "{{ .Values.image.brokerSts.repository }}:{{ .Values.image.brokerSts.tag }}"
-          imagePullPolicy: {{ .Values.image.brokerSts.pullPolicy }}
+          image: "{{ .Values.image.broker.repository }}:{{ .Values.image.broker.tag }}"
+          imagePullPolicy: {{ .Values.image.broker.pullPolicy }}
           {{- if .Values.enableTls }}
           volumeMounts:
             - name: certs
