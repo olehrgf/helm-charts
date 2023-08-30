@@ -7,9 +7,12 @@ metadata:
 data:
   {{- with .Values.spark.properties }}
   spark-defaults.conf: |
+    {{- if $.Values.cache.pvc.enabled }}
+    spark.history.store.path=/data/cache
+    {{- end }}
     {{- tpl . $ | nindent 6 }}
   {{- end }}
-  {{- with .Values.logger.properties }}
+    {{- with .Values.logger.properties }}
   log4j.properties: |
     {{- tpl . $ | nindent 6 }}
   {{- end }}

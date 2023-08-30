@@ -95,3 +95,10 @@ affinity: {}
 extraVolumeMounts: {}
 
 extraVolumes: {}
+
+cache:
+  pvc:
+    enabled: true
+    storageClass: default
+    size: 10Gi
+
