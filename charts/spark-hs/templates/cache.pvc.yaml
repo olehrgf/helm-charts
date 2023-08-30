@@ -1,0 +1,13 @@
+{{- if .Values.cache.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: spark-hs-cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.cache.pvc.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.cache.pvc.size }}
+{{- end }}

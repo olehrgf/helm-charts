@@ -71,6 +71,10 @@ spec:
             {{- with .Values.extraVolumeMounts }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
+            {{- if .Values.cache.pvc.enabled }}
+            - name: cache
+              mountPath: /data/cache
+            {{- end }}
       volumes:
         - name: {{ template "spark-hs.name" . }}-conf
           configMap:
@@ -80,6 +84,12 @@ spec:
                 path: spark-defaults.conf
               - key: log4j.properties
                 path: log4j.properties
+        {{- if .Values.cache.pvc.enabled }}
+        - name: cache
+          persistentVolumeClaim:
+            claimName: spark-hs-cache
+        {{- end }}
+
         {{- with .Values.extraVolumes }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -98,3 +108,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+
+
