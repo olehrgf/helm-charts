@@ -4,7 +4,7 @@ description: Spark History Server is the web UI for completed and running (aka i
 home: https://spark.apache.org/
 icon: https://spark.apache.org/docs/latest/img/spark-logo-hd.png
 name: spark-hs
-version: 0.0.6
+version: 0.0.7
 keywords:
   - spark
   - spark history server
@@ -13,7 +13,5 @@ sources:
   - https://github.com/olehrgf/helm-charts
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: SPARK_NO_DAEMONIZE as default value
-    - kind: added
-      description: Some examples in the values.yaml file
+    - kind: fixed
+      description: Default image tag
