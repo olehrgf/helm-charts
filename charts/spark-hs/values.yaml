@@ -9,7 +9,7 @@ rbac:
 
 image:
   name: apache/spark
-  tag: v3.2.2
+  tag: v3.4.1
   pullPolicy: IfNotPresent
 
 spark:
@@ -21,6 +21,10 @@ spark:
 #    spark.history.fs.logDirectory=s3a://<some-bucket>
 #    spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 #    spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.InstanceProfileCredentialsProvider
+#    spark.history.fs.cleaner.enabled=true
+#    spark.history.fs.update.interval=60s
+#    spark.history.ui.port=18080
+#    spark.history.fs.eventLog.rolling.maxFilesToRetain=5
 
 logger:
   properties: |
@@ -56,11 +60,19 @@ logger:
     log4j.appender.console.filter.1.StringToMatch=Thrift error occurred during processing of message
     log4j.appender.console.filter.1.AcceptOnMatch=false
 
+    # For Spark history server
+    #log4j.logger.org.apache.spark.deploy.history=DEBUG
+
 securityContext: {}
+#  fsGroup: 185 # For cache access
 
 env:
   - name: SPARK_HISTORY_OPTS
     value: -Dlog4j.configuration=file:/opt/spark/conf/log4j.properties
+  - name: SPARK_NO_DAEMONIZE
+    value: "false"
+#  - name: SPARK_DAEMON_MEMORY
+#    value: 2g
 
 envFrom: []
 
@@ -83,6 +95,7 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 
 podLabels: {}
+#  sidecar.istio.io/inject: "true"
 
 podAnnotations: {}
 
@@ -96,6 +109,7 @@ extraVolumeMounts: {}
 
 extraVolumes: {}
 
+## For Spark 3.4.x
 cache:
   pvc:
     enabled: true
