@@ -9,7 +9,7 @@ rbac:
 
 image:
   name: apache/spark
-  tag: v3.4.1
+  tag: 3.4.1
   pullPolicy: IfNotPresent
 
 spark:
