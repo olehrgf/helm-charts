@@ -39,6 +39,8 @@ spec:
           env:
             - name: SPARK_CONF_DIR
               value: /opt/spark/conf
+            - name: SPARK_NO_DAEMONIZE
+              value: "false"
           {{- with .Values.env }}
               {{- toYaml . | nindent 12 }}
           {{- end }}
