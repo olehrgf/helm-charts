@@ -1,7 +1,19 @@
 apiVersion: v1
-appVersion: 3.2.2
+appVersion: 3.4.1
 description: Spark History Server is the web UI for completed and running (aka incomplete) Spark applications. It is an extension of Spark’s web UI.
 home: https://spark.apache.org/
 icon: https://spark.apache.org/docs/latest/img/spark-logo-hd.png
 name: spark-hs
-version: 0.0.5
+version: 0.0.6
+keywords:
+  - spark
+  - spark history server
+sources:
+  - https://spark.apache.org/
+  - https://github.com/olehrgf/helm-charts
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: SPARK_NO_DAEMONIZE as default value
+    - kind: added
+      description: Some examples in the values.yaml file
