@@ -319,6 +319,28 @@ entries:
     - https://github.com/olehrgf/helm-charts/releases/download/spark-hs-0.0.1/spark-hs-0.0.1.tgz
     version: 0.0.1
   spring-boot-microservice:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: Added
+          description: application.yaml configuration
+        - kind: Added
+          description: tracker for changes in application.yaml
+    apiVersion: v2
+    appVersion: 0.0.1
+    created: "2023-09-14T16:10:33.142845975Z"
+    description: A common Helm chart for Spring boot application
+    digest: 8efc34397202f38c02f3e0521258e0150fab5cff81eba39537550d54e84e23c0
+    keywords:
+    - spring
+    - spring boot
+    name: spring-boot-microservice
+    sources:
+    - https://spring.io/projects/spring-boot
+    - https://github.com/olehrgf/helm-charts
+    type: application
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/spring-boot-microservice-1.0.0/spring-boot-microservice-1.0.0.tgz
+    version: 1.0.0
   - apiVersion: v2
     appVersion: 0.0.1
     created: "2023-07-19T09:50:14.106448731Z"
@@ -339,4 +361,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-09-12T08:21:35.934292819Z"
+generated: "2023-09-14T16:10:33.142885375Z"
