@@ -70,22 +70,26 @@ envFrom: []
 #      name: ""
 #      optional: true
 
-log4j2Config: |-
-  Configuration:
-    Appenders:
-      Console:
-        name: Console
-        target: SYSTEM_OUT
-        JsonLayout:
-          compact: true
-          eventEol: true
-          includeTimeMillis: true
+config:
+  annotations: {}
+  labels: {}
+  log4j: |-
+    Configuration:
+      Appenders:
+        Console:
+          name: Console
+          target: SYSTEM_OUT
+          JsonLayout:
+            compact: true
+            eventEol: true
+            includeTimeMillis: true
 
-    Loggers:
-      Root:
-        level: INFO
-        AppenderRef:
-          - ref: Console
+      Loggers:
+        Root:
+          level: INFO
+          AppenderRef:
+            - ref: Console
+  application: {}
 
 args: {}
 
@@ -94,7 +98,7 @@ jvmOptions:
   - -XX:MaxRAMPercentage=80.0
   - -Djava.net.preferIPv4Stack=true
   - -Djava.awt.headless=true
-  - -Dlogging.config=/etc/config/app/logging.yaml
+  - -Dspring.config.additional-location=/etc/config/app/application.yaml
 
 ingress:
   enabled: false
