@@ -13,10 +13,11 @@ spec:
       {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+          {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "spring-boot-microservice.selectorLabels" . | nindent 8 }}
         {{- if .Values.podLabels }}
@@ -43,9 +44,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- end }}
 
-          {{- with .Values.args }}
+          {{- if .Values.args }}
           args:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml .Values.args | nindent 12 }}
           {{- end }}
 
           ports:
@@ -62,7 +63,7 @@ spec:
             {{- else }}
             httpGet:
               path: /actuator/health/liveness
-              port: {{.Values.service.managementPort}}
+              port: http-management
             failureThreshold: 3
             periodSeconds: 15
             {{- end }}
@@ -73,7 +74,7 @@ spec:
             {{- else }}
             httpGet:
               path: /actuator/health/readiness
-              port: {{ .Values.service.managementPort }}
+              port: http-management
             failureThreshold: 10
             periodSeconds: 15
             {{- end }}
@@ -84,7 +85,7 @@ spec:
             {{- else }}
             httpGet:
               path: /actuator/health/liveness
-              port: {{ .Values.service.managementPort }}
+              port: http-management
             failureThreshold: 10
             initialDelaySeconds: 15
             periodSeconds: 15
@@ -95,7 +96,7 @@ spec:
 
           env:
             - name: LOG4J_CONFIGURATION_FILE
-              value: /etc/config/logging.yaml
+              value: /etc/config/app/logging.yaml
             - name: JAVA_TOOL_OPTIONS
               value: {{ join " " .Values.jvmOptions }}
           {{- with .Values.extraEnv }}
@@ -112,6 +113,10 @@ spec:
               mountPath: /etc/config/app/logging.yaml
               readOnly: true
               subPath: logging.yaml
+            - name: application
+              mountPath: /etc/config/app/application.yaml
+              readOnly: true
+              subPath: application.yaml
           {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -123,6 +128,12 @@ spec:
             items:
               - key: "logging.yaml"
                 path: logging.yaml
+        - name: application
+          configMap:
+            name: {{ include "spring-boot-microservice.fullname" . }}
+            items:
+              - key: "application.yaml"
+                path: application.yaml
       {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

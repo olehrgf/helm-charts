@@ -3,9 +3,20 @@ kind: ConfigMap
 metadata:
   name: {{ include "spring-boot-microservice.fullname" . }}
   labels:
-  {{- include "spring-boot-microservice.labels" . | nindent 6 }}
+  {{- include "spring-boot-microservice.labels" . | nindent 4 }}
+  {{- if .Values.config.labels }}
+  {{- toYaml .Values.config.labels | nindent 4 }}
+  {{- end }}
+  {{- if .Values.config.annotations }}
+  annotations:
+    {{- toYaml .Values.config.annotations | nindent 4 }}
+  {{- end }}
 data:
-  {{- with .Values.log4j2Config }}
+  {{- with .Values.config.log4j }}
   logging.yaml: >-
-    {{- tpl . $ | nindent 6 }}
+    {{- tpl . $ | nindent 4 }}
     {{- end }}
+  {{- with .Values.config.application }}
+  application.yaml: >-
+    {{- tpl . $ | nindent 4 }}
+  {{- end }}
