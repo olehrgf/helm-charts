@@ -322,6 +322,26 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: Added
+          description: Custom command configuration
+    apiVersion: v2
+    appVersion: 0.0.1
+    created: "2023-09-21T11:56:15.259082714Z"
+    description: A common Helm chart for Spring boot application
+    digest: 942de995d09bc6acab504507e16f3f2cf478efcaae123e2b926f4bb66a98aada
+    keywords:
+    - spring
+    - spring boot
+    name: spring-boot-microservice
+    sources:
+    - https://spring.io/projects/spring-boot
+    - https://github.com/olehrgf/helm-charts
+    type: application
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/spring-boot-microservice-1.0.1/spring-boot-microservice-1.0.1.tgz
+    version: 1.0.1
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: Added
           description: application.yaml configuration
         - kind: Added
           description: tracker for changes in application.yaml
@@ -361,4 +381,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-09-14T16:10:33.142885375Z"
+generated: "2023-09-21T11:56:15.259122715Z"
