@@ -36,11 +36,11 @@ podSecurityContext: {}
 
 securityContext: {}
   # capabilities:
-#   drop:
-#   - ALL
-# readOnlyRootFilesystem: true
-# runAsNonRoot: true
-# runAsUser: 1000
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
 service:
   enabled: true
@@ -91,7 +91,12 @@ config:
             - ref: Console
   application: {}
 
-args: {}
+# Entrypoint array. Not executed within a shell. The docker image's ENTRYPOINT is used if this is not provided.
+# The default entrypoint for jib generated docker image is `java -cp @/app/jib-classpath-file @/app/jib-main-class-file`
+command: []
+
+# Arguments to the entrypoint.
+args: []
 
 jvmOptions:
   - -XX:+UseContainerSupport
@@ -141,11 +146,11 @@ resources: {}
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-#   cpu: 100m
-#   memory: 128Mi
-# requests:
-#   cpu: 100m
-#   memory: 128Mi
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 extraVolumeMounts: {}
 

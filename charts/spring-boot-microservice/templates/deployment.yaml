@@ -38,12 +38,15 @@ spec:
             {{- toYaml .Values.podSecurityContext | nindent 12 }}
           {{- if (contains "sha256:" .Values.image.tag) }}
           image: "{{ .Values.image.repository }}@{{ .Values.image.tag | trimPrefix "@" | default .Chart.AppVersion }}"
-          imagePullPolicy: IfNotPresent
           {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
 
+          {{- if .Values.command }}
+          command:
+            {{- toYaml .Values.command | nindent 12 }}
+          {{- end }}
           {{- if .Values.args }}
           args:
             {{- toYaml .Values.args | nindent 12 }}
@@ -134,9 +137,9 @@ spec:
             items:
               - key: "application.yaml"
                 path: application.yaml
-      {{- with .Values.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- with .Values.extraVolumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
