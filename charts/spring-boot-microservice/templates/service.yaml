@@ -29,5 +29,5 @@ spec:
   {{- end }}
   selector:
   {{- include "spring-boot-microservice.selectorLabels" $ | nindent 4 }}
-  {{- end }}
-  {{- end }}
+{{- end }}
+{{- end }}
