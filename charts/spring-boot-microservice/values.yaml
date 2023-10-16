@@ -25,7 +25,13 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# -- podAnnotations is an optional map of annotations to be applied to the Pods
+# -- Optional map of annotations to be applied to the Deployment
+annotations: {}
+
+# -- Optional labels to add to the Deployment
+labels: {}
+
+# -- Optional map of annotations to be applied to the Pods
 podAnnotations: {}
 
 # -- Optional labels to add to the pods
