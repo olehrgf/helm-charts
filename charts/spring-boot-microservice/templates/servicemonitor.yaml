@@ -26,8 +26,8 @@ spec:
     matchLabels:
     {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
   endpoints:
-    - port: {{ .port }}
-      path: {{ .path }}
-      interval: {{ .interval }}
-      scrapeTimeout: {{ .scrapeTimeout }}
+    - port: {{ .Values.metricsConfig.port }}
+      path: {{ .Values.metricsConfig.path }}
+      interval: {{ .Values.metricsConfig.interval }}
+      scrapeTimeout: {{ .Values.metricsConfig.scrapeTimeout }}
 {{- end }}
