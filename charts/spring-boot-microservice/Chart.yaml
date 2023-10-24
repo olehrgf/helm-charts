@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.0.2
+version: 1.0.3
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -28,6 +28,9 @@ sources:
   - https://spring.io/projects/spring-boot
   - https://github.com/olehrgf/helm-charts
 annotations:
+  # https://artifacthub.io/docs/topics/annotations/helm/
   artifacthub.io/changes: |
-    - kind: Added
-      description: Add labels and annotation to the Deployment
+    - kind: Changed
+      description: Updated service monitor
+    - kind: Removed
+      description: Removed custom labels

@@ -48,8 +48,7 @@ Selector labels
 {{- define "spring-boot-microservice.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "spring-boot-microservice.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: {{ .Release.Name }}
-version: {{ .Values.appVersion }}
+app.kubernetes.io/version: {{ .Values.appVersion | quote }}
 {{- end }}
 
 {{/*

@@ -1,36 +1,33 @@
-{{- with .Values.metricsConfig }}
-  {{- if .enabled }}
+{{- if .Values.metricsConfig.enabled }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "spring-boot-microservice.fullname" $ }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
-  {{- with .annotations }}
+  name: {{ include "spring-boot-microservice.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.metricsConfig.annotations }}
   annotations:
-  {{- range $key, $value := . }}
-  {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
-  {{- end }}
+    {{- range $key, $value := .Values.metricsConfig.annotations }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
   {{- end }}
   labels:
-  {{- include "spring-boot-microservice.labels" $ | nindent 4 }}
-  {{- range $key, $value := .labels }}
-  {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
-  {{- end }}
+    {{- include "spring-boot-microservice.labels" . | nindent 4 }}
+    {{- if .Values.metricsConfig.labels }}
+      {{- range $key, $value := .Values.metricsConfig.labels }}
+      {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+      {{- end }}
+    {{- end }}
 spec:
-  {{- with .namespaceSelector }}
   namespaceSelector:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
-  {{- include "spring-boot-microservice.selectorLabels" $ | nindent 6 }}
+    {{- include "spring-boot-microservice.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: {{ .port }}
       path: {{ .path }}
       interval: {{ .interval }}
       scrapeTimeout: {{ .scrapeTimeout }}
-  {{- end }}
-  {{- end }}
+{{- end }}
