@@ -322,6 +322,26 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: Fixed
+          description: Fixed selector labels
+    apiVersion: v2
+    appVersion: 0.0.1
+    created: "2023-10-24T17:42:14.402822452Z"
+    description: A common Helm chart for Spring boot application
+    digest: 78e9458c5561e8067c90235aff037f1e7b96c078ebb0bd1ed1e0e9bbf4e4a7e5
+    keywords:
+    - spring
+    - spring boot
+    name: spring-boot-microservice
+    sources:
+    - https://spring.io/projects/spring-boot
+    - https://github.com/olehrgf/helm-charts
+    type: application
+    urls:
+    - https://github.com/olehrgf/helm-charts/releases/download/spring-boot-microservice-1.0.5/spring-boot-microservice-1.0.5.tgz
+    version: 1.0.5
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: Fixed
           description: Fixed service monitor
     apiVersion: v2
     appVersion: 0.0.1
@@ -443,4 +463,4 @@ entries:
     urls:
     - spring-boot-microservice-0.0.4.tgz
     version: 0.0.4
-generated: "2023-10-24T15:34:32.421468153Z"
+generated: "2023-10-24T17:42:14.402877556Z"
