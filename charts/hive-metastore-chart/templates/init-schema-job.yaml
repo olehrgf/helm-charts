@@ -17,7 +17,9 @@ spec:
           image: "{{.Values.image.name}}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources: {{- toYaml .Values.initjob.resources | nindent 12 }}
-          command: ["/opt/hive-metastore/bin/init-schema.sh"]
+          command: ["/opt/hive-metastore/bin/schema-tool.sh"]
+          args:
+            {{- toYaml .Values.initjob.args | nindent 12 }}
           env:
           {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
