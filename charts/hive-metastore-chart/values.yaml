@@ -51,6 +51,11 @@ initjob:
 #    argocd.argoproj.io/hook: Sync
 #    argocd.argoproj.io/hook-delete-policy: HookSucceeded
   resources: {}
+  args:
+    - -dbType
+    - postgres
+    - -initSchema
+    - -ifNotExists
 
 nodeSelector: {}
 
